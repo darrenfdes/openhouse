@@ -95,6 +95,11 @@ describe('StayVista operator', () => {
     expect(r.years[0].occupancy).toBeCloseTo(0.5, 10);
   });
 
+  test('a pool does not lift the whole-villa rate, which already includes it', () => {
+    const withPool = { ...plan, cards: { ...plan.cards, pool: { ...plan.cards.pool, on: true } } };
+    expect(runPlan(withPool).years[0].roomRev).toBeCloseTo(runPlan(plan).years[0].roomRev, 6);
+  });
+
   test('StayVista pays guest costs and booking fees', () => {
     expect(runPlan(plan).years[0].varCost).toBe(0);
   });

@@ -47,6 +47,13 @@ describe('validate', () => {
     expect(r.errors[0]).toEqual({ path: 'sections[0].type', message: expect.stringMatching(/indoor, outdoor, terrace or roof/) });
   });
 
+  test('a missing format is filled; overlapping rent steps are refused', () => {
+    const { format: _, ...noFormat } = minimal;
+    expect(validate(noFormat).filled).toContain('format');
+    const overlap = validate({ ...minimal, lease: { years: 5, rentSteps: [{ fromYear: 1, toYear: 3, monthly: 1 }, { fromYear: 3, toYear: 5, monthly: 2 }] } });
+    expect(overlap.errors).toEqual([{ path: 'lease.rentSteps[1]', message: 'Rent steps 1 and 2 both cover some of the same years.' }]);
+  });
+
   test('unknown fields are ignored with a warning', () => {
     const r = validate({ ...minimal, colour: 'blue', lease: { ...minimal.lease, landlord: 'Mr D' } });
     expect(r.ok).toBe(true);

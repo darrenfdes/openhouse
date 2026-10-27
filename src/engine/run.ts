@@ -228,7 +228,8 @@ export function runPlan(plan: Plan, opts: RunOptions = {}): Result {
         // StayVista: whole villa, one nightly rate; StayVista's cut replaces booking fees.
         const sv = operator.stayvista;
         const villaNights = d * Math.min(1, sv.occupancy[s] * r);
-        const net = (villaNights * sv.rates[s] * infl * rateScale * poolLift) / (1 + sv.gst);
+        // The whole-villa rate is quoted for the house as listed, pool included: no pool lift here.
+        const net = (villaNights * sv.rates[s] * infl * rateScale) / (1 + sv.gst);
         roomRev = net;
         commission = net * sv.commission;
         nights = villaNights * rooms;

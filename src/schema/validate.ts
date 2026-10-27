@@ -21,7 +21,7 @@ const card = (label: string, extra: Record<string, Node> = {}) =>
   });
 
 export const PLAN_SCHEMA = obj('Plan', {
-  format: lit('Format', FORMAT, { req: `Format must be "${FORMAT}".` }),
+  format: lit('Format', FORMAT),
   name: str('Plan name', { req: 'Give the plan a name (plan name is required).', nonEmpty: true }),
   label: str('Plan description', { opt: true }),
   guess: bool('Untested guesses', { opt: true }),
@@ -249,6 +249,8 @@ function crossCheck(plan: Plan, ctx: Ctx) {
     ctx.errors.push({ path: 'lease.walkAwayYear', message: `Walk-away year (${walkAwayYear}) is after the lease ends (year ${years}).` });
   rentSteps.forEach((s, i) => {
     if (s.toYear < s.fromYear) ctx.errors.push({ path: `lease.rentSteps[${i}]`, message: `Rent step ${i + 1} ends (year ${s.toYear}) before it starts (year ${s.fromYear}).` });
+    const clash = rentSteps.findIndex((o, j) => j < i && s.fromYear <= o.toYear && o.fromYear <= s.toYear);
+    if (clash >= 0) ctx.errors.push({ path: `lease.rentSteps[${i}]`, message: `Rent steps ${clash + 1} and ${i + 1} both cover some of the same years.` });
   });
   for (let y = 1; y <= years; y++) {
     if (!rentSteps.some((s) => y >= s.fromYear && y <= s.toYear)) ctx.warnings.push(`No rent step covers year ${y}; rent is 0 that year.`);
