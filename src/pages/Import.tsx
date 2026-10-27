@@ -4,7 +4,7 @@ import { downloadJson, downloadText } from '../lib/download';
 import { EXAMPLE, FORMAT_GUIDE, PROMPT } from '../lib/importPrompt';
 import { navigate } from '../lib/route';
 import { validate, type Validation } from '../schema/validate';
-import { useSelected, useStore } from '../state/store';
+import { useProject, useSelected, useStore } from '../state/store';
 import { PlanActions } from './PlanActions';
 
 /** Parses pasted text, accepting the code fences a chat assistant wraps JSON in. */
@@ -21,6 +21,7 @@ export function parsePlanText(text: string): { value?: unknown; error?: string }
 export function Import() {
   const { dispatch } = useStore();
   const selected = useSelected();
+  const project = useProject();
   const [text, setText] = useState('');
   const [check, setCheck] = useState<Validation | null>(null);
   const [parseError, setParseError] = useState<string | null>(null);
@@ -49,7 +50,7 @@ export function Import() {
       <div className="title-row">
         <div>
           <h1>Import and share</h1>
-          <p className="finding">Bring in a plan as openhouse/v1 JSON, or send this one to a friend. Plans stay in this browser and in the links you share.</p>
+          <p className="finding">Bring in a plan as openhouse/v1 JSON, or send this one to a friend. To make one from scratch, use <a href="/new" onClick={(e) => { e.preventDefault(); navigate('new'); }}>New plan</a>. Plans stay in this browser and in the links you share.</p>
         </div>
       </div>
       <div className="stack">
@@ -101,7 +102,7 @@ export function Import() {
               )}
               {check?.ok && check.plan && (
                 <div className="stack">
-                  <p style={{ margin: 0 }}><strong>{check.plan.name}</strong> is ready to load.</p>
+                  <p style={{ margin: 0 }}><strong>{check.plan.name}</strong> is ready to load into {project.name}.</p>
                   {check.filled.length > 0 && <p className="card-note" style={{ margin: 0 }}>Filled from defaults: {check.filled.join(', ')}.</p>}
                   <div><button type="button" className="btn primary" onClick={() => { dispatch({ type: 'add', plan: check.plan! }); navigate('plan'); }}>Load plan</button></div>
                 </div>

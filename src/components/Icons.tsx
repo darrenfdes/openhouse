@@ -33,6 +33,12 @@ export const IconImport = () => (
     <path d="M2.5 11v2.5h11V11" />
   </Icon>
 );
+export const IconNew = () => (
+  <Icon>
+    <rect x="2.5" y="2.5" width="11" height="11" rx="2" />
+    <path d="M8 5.5v5M5.5 8h5" />
+  </Icon>
+);
 export const IconMenu = () => (
   <Icon>
     <path d="M2.5 4.5h11M2.5 8h11M2.5 11.5h11" />

@@ -1,5 +1,7 @@
 # Glossary
 
+- **Project**: one property (name and place) and the plans made for it. Velsao House is the first project; plans are compared across projects, named with their project.
+- **Plan builder**: the New plan page. Builds a plan step by step (property, lease, operator, rooms, extras, money in) with a live preview, starting blank, on the project's property, or from a copy.
 - **Plan**: one complete scenario for a property: sections, lease, operator, cards, subleases, partners. Saved and shared as `openhouse/v1` JSON.
 - **Section**: a named part of the property (name, type, area in m2, optional parent, note). Everything placed in the property sits in a section.
 - **Card**: a switchable part of a plan (rooms, café, co-working, pool, power backup, kitchen) with build cost, running cost and income.

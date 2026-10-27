@@ -5,7 +5,7 @@ import { Term } from '../components/Term';
 import { breakEven, readYear, runPlan, type Result } from '../engine';
 import type { TermKey } from '../lib/glossary';
 import { lakh, lakhTick, monthLabel, pct, years } from '../lib/money';
-import { MAX_COMPARE, useStore } from '../state/store';
+import { MAX_COMPARE, planTitle, useStore } from '../state/store';
 
 // Each plan gets a hue and a dash, so the lines read apart without colour too.
 const STYLES = [
@@ -41,8 +41,8 @@ export function Compare() {
       state.compareIds
         .map((id) => state.plans.find((p) => p.id === id))
         .filter((p) => p !== undefined)
-        .map((p) => ({ ...p, result: runPlan(p.plan), be: breakEven(p.plan).lease })),
-    [state.plans, state.compareIds],
+        .map((p) => ({ ...p, title: planTitle(state, p), result: runPlan(p.plan), be: breakEven(p.plan).lease })),
+    [state],
   );
 
   const maxMonth = Math.max(0, ...runs.map((r) => r.result.months.length - 1));
@@ -77,7 +77,7 @@ export function Compare() {
               return (
                 <label key={p.id} className="btn" style={{ background: on ? 'var(--active)' : undefined }}>
                   <input type="checkbox" checked={on} disabled={!on && state.compareIds.length >= MAX_COMPARE} onChange={() => dispatch({ type: 'toggleCompare', id: p.id })} />
-                  {p.plan.name}
+                  {planTitle(state, p)}
                 </label>
               );
             })}
@@ -94,18 +94,18 @@ export function Compare() {
               {runs.map((r, i) => (
                 <span key={r.id}>
                   <svg width="22" height="8" aria-hidden="true"><line x1="0" y1="4" x2="22" y2="4" stroke={STYLES[i].stroke} strokeWidth="2.5" strokeDasharray={STYLES[i].dash} /></svg>
-                  {r.plan.name} <span className="visually-hidden">({STYLES[i].name})</span>
+                  {r.title} <span className="visually-hidden">({STYLES[i].name})</span>
                 </span>
               ))}
             </div>
-            <div style={{ height: 300 }} role="img" aria-label={`Cumulative cash for ${runs.map((r) => `${r.plan.name}, ending at ${lakh(r.result.endCash)}`).join('; ')}.`}>
+            <div style={{ height: 300 }} role="img" aria-label={`Cumulative cash for ${runs.map((r) => `${r.title}, ending at ${lakh(r.result.endCash)}`).join('; ')}.`}>
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
                   <CartesianGrid vertical={false} stroke="var(--grid)" />
                   <XAxis dataKey="month" type="number" domain={[0, maxMonth]} ticks={Array.from({ length: Math.floor(maxMonth / 12) + 1 }, (_, i) => i * 12)} tickFormatter={(m: number) => `${m / 12}`} tick={{ fill: 'var(--muted)', fontSize: 12 }} axisLine={false} tickLine={false} height={28} label={{ value: 'Years', position: 'insideBottomRight', offset: 0, fill: 'var(--muted)', fontSize: 12 }} />
                   <YAxis tickFormatter={lakhTick} tick={{ fill: 'var(--muted)', fontSize: 12 }} axisLine={false} tickLine={false} width={52} />
                   <ReferenceLine y={0} stroke="var(--text)" />
-                  <Tooltip formatter={(v: number, id: string) => [lakh(v), runs.find((r) => r.id === id)?.plan.name ?? id]} labelFormatter={monthLabel} contentStyle={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 6, fontSize: 13 }} />
+                  <Tooltip formatter={(v: number, id: string) => [lakh(v), runs.find((r) => r.id === id)?.title ?? id]} labelFormatter={monthLabel} contentStyle={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 6, fontSize: 13 }} />
                   {runs.map((r, i) => (
                     <Line key={r.id} dataKey={r.id} stroke={STYLES[i].stroke} strokeDasharray={STYLES[i].dash} strokeWidth={2.5} dot={false} isAnimationActive={false} connectNulls={false} />
                   ))}
@@ -125,7 +125,7 @@ export function Compare() {
                 <thead>
                   <tr>
                     <th />
-                    {runs.map((r) => <th key={r.id} className="num">{r.plan.name}{r.plan.guess ? ' (guesses)' : ''}</th>)}
+                    {runs.map((r) => <th key={r.id} className="num">{r.title}{r.plan.guess ? ' (guesses)' : ''}</th>)}
                   </tr>
                 </thead>
                 <tbody>

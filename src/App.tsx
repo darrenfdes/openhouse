@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react';
-import { IconClose, IconCompare, IconDetails, IconImport, IconMenu, IconPlan, IconTheme, Mark } from './components/Icons';
+import { IconClose, IconCompare, IconDetails, IconImport, IconMenu, IconNew, IconPlan, IconTheme, Mark } from './components/Icons';
 import { planFromHash } from './lib/share';
 import { ROUTES, navigate, useRoute, type Route } from './lib/route';
+import { Builder } from './pages/Builder';
 import { Compare } from './pages/Compare';
 import { Dashboard } from './pages/Dashboard';
 import { Details } from './pages/Details';
 import { Import } from './pages/Import';
-import { StoreProvider, reducer, useSelected, useStore, type State } from './state/store';
+import { StoreProvider, reducer, useProject, useSelected, useStore, type State } from './state/store';
 
 const NAV: { route: Route; label: string; icon: () => React.ReactElement }[] = [
   { route: 'plan', label: 'Plan', icon: IconPlan },
+  { route: 'new', label: 'New plan', icon: IconNew },
   { route: 'details', label: 'All settings', icon: IconDetails },
   { route: 'compare', label: 'Compare', icon: IconCompare },
   { route: 'import', label: 'Import and share', icon: IconImport },
@@ -51,6 +53,8 @@ function Shell() {
   const route = useRoute();
   const { state, dispatch } = useStore();
   const { id, plan } = useSelected();
+  const project = useProject();
+  const title = route === 'plan' ? plan.name : route === 'newProject' ? 'New project' : NAV.find((n) => n.route === route)!.label;
   const [menu, setMenu] = useState(false);
   const theme = useTheme();
   const go = (r: Route) => (e: React.MouseEvent) => {
@@ -59,14 +63,14 @@ function Shell() {
     navigate(r);
   };
   useEffect(() => {
-    document.title = `${route === 'plan' ? plan.name : NAV.find((n) => n.route === route)!.label} · Open House`;
-  }, [route, plan.name]);
+    document.title = `${title} · Open House`;
+  }, [title]);
 
   return (
     <div className="shell">
       <header className="topbar">
         <span className="brand" style={{ padding: 0 }}><Mark size={22} /></span>
-        <span className="topbar-title">{route === 'plan' ? plan.name : NAV.find((n) => n.route === route)!.label}</span>
+        <span className="topbar-title">{title}</span>
         <button type="button" className="btn ghost" aria-label="Open menu" aria-expanded={menu} onClick={() => setMenu(true)}><IconMenu /></button>
       </header>
       <nav className={`sidebar${menu ? ' open' : ''}`} aria-label="Main">
@@ -75,11 +79,16 @@ function Shell() {
           <span>Open House</span>
           {menu && <button type="button" className="btn ghost" style={{ marginLeft: 'auto' }} aria-label="Close menu" onClick={() => setMenu(false)}><IconClose /></button>}
         </div>
-        <label className="visually-hidden" htmlFor="switcher">Plan</label>
-        <select id="switcher" className="switcher" value={id} onChange={(e) => dispatch({ type: 'select', id: e.target.value })}>
-          {state.plans.map((p) => <option key={p.id} value={p.id}>{p.plan.name}</option>)}
+        <label className="side-label" style={{ paddingTop: 0 }} htmlFor="project">Project</label>
+        <select id="project" className="switcher" value={project.id} onChange={(e) => dispatch({ type: 'selectProject', id: e.target.value })}>
+          {state.projects.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
         </select>
-        <div className="side-label">Velsao, South Goa</div>
+        <a className="project-new" href={ROUTES.newProject} onClick={go('newProject')}>New project</a>
+        <label className="side-label" htmlFor="switcher">{project.place ? `Plans for ${project.place}` : 'Plans'}</label>
+        <select id="switcher" className="switcher" value={id} onChange={(e) => dispatch({ type: 'select', id: e.target.value })}>
+          {state.plans.filter((p) => p.projectId === project.id).map((p) => <option key={p.id} value={p.id}>{p.plan.name}</option>)}
+        </select>
+        <div style={{ height: 12 }} />
         <div className="nav">
           {NAV.map((n) => (
             <a key={n.route} href={ROUTES[n.route]} onClick={go(n.route)} aria-current={route === n.route ? 'page' : undefined}>
@@ -90,11 +99,12 @@ function Shell() {
         </div>
         <div className="side-foot nav">
           <button type="button" className="navlink" onClick={theme.toggle}><IconTheme />{theme.dark ? 'Light mode' : 'Dark mode'}</button>
-          <button type="button" className="navlink" onClick={() => window.confirm('Put back Plans A, B, C and the StayVista plan, and delete every change and plan you made?') && dispatch({ type: 'reset' })}>Start over</button>
+          <button type="button" className="navlink" onClick={() => window.confirm('Put back Velsao House with Plans A, B, C and the StayVista plan, and delete every change, plan and project you made?') && dispatch({ type: 'reset' })}>Start over</button>
         </div>
       </nav>
       <main className="canvas">
         {route === 'plan' && <Dashboard />}
+        {(route === 'new' || route === 'newProject') && <Builder key={route} newProject={route === 'newProject'} />}
         {route === 'details' && <Details />}
         {route === 'compare' && <Compare />}
         {route === 'import' && <Import />}

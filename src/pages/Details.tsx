@@ -10,7 +10,7 @@ import {
   COST_LINES, OPERATORS, PAYERS, RENT_MODES, SEASONS, SECTION_TYPES, SUBLEASE_KINDS, type BuildGroup, type Plan, type Season,
 } from '../schema/plan';
 import { autoEscalate, rentInYear } from '../schema/rentSteps';
-import { useSelected, useStore } from '../state/store';
+import { useProject, useSelected, useStore } from '../state/store';
 
 type Path = (string | number)[];
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -36,6 +36,8 @@ function Set({ id, title, desc, term, children }: { id: string; title: string; d
 export function Details() {
   const { dispatch, state } = useStore();
   const { id, plan } = useSelected();
+  const project = useProject();
+  const planCount = state.plans.filter((p) => p.projectId === project.id).length;
   const set = (next: Plan) => dispatch({ type: 'update', id, plan: next });
   const put = (path: Path, v: unknown) => set(setIn(plan, path, v));
   const num = (path: Path, label: ReactNode, unit?: Parameters<typeof NumberField>[0]['unit'], min = 0, max?: number) => (
@@ -64,6 +66,16 @@ export function Details() {
         </div>
       </div>
 
+      <Set id="project" title="Project" desc="The property this plan belongs to. Every plan in a project shares its name and place.">
+        <div className="fields">
+          <TextField label="Project name" value={project.name} onChange={(v) => dispatch({ type: 'updateProject', id: project.id, name: v, place: project.place })} />
+          <TextField label="Place" value={project.place} onChange={(v) => dispatch({ type: 'updateProject', id: project.id, name: project.name, place: v })} />
+        </div>
+        <div className="actions" style={{ justifyContent: 'flex-start' }}>
+          <button type="button" className="btn" disabled={state.projects.length <= 1} onClick={() => window.confirm(`Delete ${project.name} and its ${planCount} ${planCount === 1 ? 'plan' : 'plans'}? This cannot be undone.`) && dispatch({ type: 'removeProject', id: project.id })}>Delete project</button>
+        </div>
+      </Set>
+
       <Set id="plan" title="Plan" desc="Its name and a line on what it is." term="plan">
         <div className="fields">
           <TextField label="Name" value={plan.name} onChange={(v) => put(['name'], v)} />
@@ -71,7 +83,7 @@ export function Details() {
         </div>
         <div className="actions" style={{ justifyContent: 'flex-start' }}>
           <button type="button" className="btn" onClick={() => put(['guess'], !plan.guess)}>{plan.guess ? 'Numbers are checked' : 'Mark as untested guesses'}</button>
-          <button type="button" className="btn" disabled={state.plans.length <= 1} onClick={() => window.confirm(`Delete ${plan.name}? This cannot be undone.`) && dispatch({ type: 'remove', id })}>Delete plan</button>
+          <button type="button" className="btn" disabled={planCount <= 1} onClick={() => window.confirm(`Delete ${plan.name}? This cannot be undone.`) && dispatch({ type: 'remove', id })}>Delete plan</button>
         </div>
       </Set>
 

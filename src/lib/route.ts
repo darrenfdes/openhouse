@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-export const ROUTES = { plan: '/', details: '/details', compare: '/compare', import: '/import' } as const;
+export const ROUTES = { plan: '/', new: '/new', newProject: '/new-project', details: '/details', compare: '/compare', import: '/import' } as const;
 export type Route = keyof typeof ROUTES;
 
 function current(): Route {
