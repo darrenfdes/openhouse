@@ -152,7 +152,7 @@ function book(ledger: SectionLedger, sectionId: string | null, amount: number) {
 }
 
 /** Monthly rent and deposit flows from one sublease in lease month index `i` (0-based). */
-function subleaseMonth(s: Plan['subleases'][number], i: number, inflation: number): { rent: number; deposit: number } {
+function subleaseMonth(s: Plan['subleases'][number], i: number, inflation: number, last: boolean): { rent: number; deposit: number } {
   const start = s.startMonth - 1;
   if (i < start) return { rent: 0, deposit: 0 };
   const t = i - start; // tenant month, 0-based
@@ -168,6 +168,8 @@ function subleaseMonth(s: Plan['subleases'][number], i: number, inflation: numbe
   if (t === 0) deposit += depositAmount;
   if (t === leaveAt) deposit -= depositAmount;
   if (t === relet) deposit += s.monthlyRent * level * s.depositMonths;
+  // The tenant in place at the end of the lease gets its deposit back.
+  if (last && (t < leaveAt || t >= relet)) deposit -= t < leaveAt ? depositAmount : s.monthlyRent * Math.pow(1 + s.yearlyIncrease, Math.floor(relet / 12)) * s.depositMonths;
   const tenantMonth = t < leaveAt ? t : t >= relet ? t - relet : -1;
   const rent = tenantMonth < 0 || tenantMonth < s.rentFreeMonths ? 0 : rentDue;
   return { rent, deposit };
@@ -203,7 +205,7 @@ export function runPlan(plan: Plan, opts: RunOptions = {}): Result {
     book(y.bySection, null, -rent);
 
     for (const s of plan.subleases) {
-      const f = subleaseMonth(s, i, assumptions.inflation);
+      const f = subleaseMonth(s, i, assumptions.inflation, i === months - 1);
       y.subleaseRev += f.rent;
       rev += f.rent;
       book(y.bySection, s.sectionId, f.rent);
