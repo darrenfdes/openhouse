@@ -130,7 +130,23 @@ export interface Cards {
   kitchen: SimpleCard;
 }
 
-export const PAYERS = ['partners', 'operator'] as const;
+/** An extra the partners define themselves: kayaks, a spa room, bike hire. Money is in today's rupees. */
+export interface Extra {
+  id: string;
+  name: string;
+  on: boolean;
+  sectionId: string;
+  areaM2: number;
+  build: number;
+  /** Running cost a month. */
+  monthly: number;
+  /** Income a month in each season. */
+  income: BySeason<number>;
+  /** Income grows with guests over the first two years, like rooms do; otherwise it is full from opening. */
+  rampsUp: boolean;
+}
+
+export const PAYERS =['partners', 'operator'] as const;
 export type Payer = (typeof PAYERS)[number];
 
 export const COST_LINES = ['housekeeping', 'caretaker', 'guestCosts', 'partnerSalary', 'utilities', 'other'] as const;
@@ -229,6 +245,7 @@ export interface Plan {
   rooms: RoomType[];
   stays: Stays;
   cards: Cards;
+  extras: Extra[];
   costs: Costs;
   build: Build;
   subleases: Sublease[];

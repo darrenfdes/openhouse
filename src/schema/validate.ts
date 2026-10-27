@@ -1,5 +1,5 @@
 // The openhouse/v1 format as a schema, and `validate`, the one way a plan gets into the app.
-import { DEFAULT_PLAN, DEFAULT_ROOM, DEFAULT_SUBLEASE } from './defaults';
+import { DEFAULT_EXTRA, DEFAULT_PLAN, DEFAULT_ROOM, DEFAULT_SUBLEASE } from './defaults';
 import { arr, bool, check, lit, num, obj, oneOf, str, strip, type Ctx, type Issue, type Node } from './kit';
 import {
   BUILD_GROUPS, COST_LINES, FORMAT, OPERATORS, PAYERS, RENT_MODES, SEASONS, SECTION_TYPES, SUBLEASE_KINDS, type Plan,
@@ -118,6 +118,21 @@ export const PLAN_SCHEMA = obj('Plan', {
     powerBackup: card('Power backup'),
     kitchen: card('Kitchen and catering'),
   }),
+  extras: arr(
+    'Extras',
+    obj('Extra', {
+      id: str('Extra id'),
+      name: str('Extra name', { req: 'Each extra needs a name.' }),
+      on: bool('Extra: on'),
+      sectionId: str('Extra: section'),
+      areaM2: num('Extra: area (m²)', { min: 0 }),
+      build: money('Extra: build cost'),
+      monthly: money('Extra: monthly running cost'),
+      income: bySeason('Extra: income a month', money),
+      rampsUp: bool('Extra: income ramps up with guests'),
+    }),
+    { item: DEFAULT_EXTRA },
+  ),
   costs: obj('Running costs', {
     housekeepers: num('Housekeepers', { min: 0, int: true }),
     housekeeperPay: money('Housekeeper pay'),
@@ -240,6 +255,10 @@ function crossCheck(plan: Plan, ctx: Ctx) {
     place(`subleases[${i}].sectionId`, `Sublease "${s.name}"`, s.sectionId);
   });
   for (const [key, c] of Object.entries(plan.cards)) if (c.on) place(`cards.${key}.sectionId`, `The ${key} card`, c.sectionId);
+  plan.extras.forEach((x, i) => {
+    if (!x.id || x.id === DEFAULT_EXTRA.id) x.id = `extra-${i + 1}`;
+    place(`extras[${i}].sectionId`, `Extra "${x.name}"`, x.sectionId);
+  });
   plan.build.lines.forEach((l, i) => {
     if (l.sectionId !== undefined && !ids.has(l.sectionId)) place(`build.lines[${i}].sectionId`, `Build line "${l.label}"`, l.sectionId);
   });

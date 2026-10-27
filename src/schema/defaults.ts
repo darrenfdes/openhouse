@@ -1,4 +1,4 @@
-import { FORMAT, type CafeCard, type Plan, type RoomType, type Season, type Section, type Sublease } from './plan';
+import { FORMAT, type CafeCard, type Extra, type Plan, type RoomType, type Season, type Section, type Sublease } from './plan';
 import { autoEscalate } from './rentSteps';
 
 // Goa: peak Dec-Feb, shoulder Oct-Nov and Mar-Apr, low May, monsoon Jun-Sep.
@@ -32,6 +32,18 @@ export const DEFAULT_SUBLEASE: Sublease = {
   depositMonths: 3,
   partnerFitout: 0,
   voidMonths: 4,
+};
+
+export const DEFAULT_EXTRA: Extra = {
+  id: 'extra',
+  name: 'New extra',
+  on: true,
+  sectionId: '',
+  areaM2: 0,
+  build: 0,
+  monthly: 0,
+  income: { peak: 0, shoulder: 0, low: 0, monsoon: 0 },
+  rampsUp: true,
 };
 
 const DEFAULT_CAFE: CafeCard = {
@@ -96,6 +108,7 @@ export const DEFAULT_PLAN: Plan = {
     powerBackup: { on: false, sectionId: 'land', build: 400000, monthly: 8000 },
     kitchen: { on: false, sectionId: 'old-house', build: 400000, monthly: 0 },
   },
+  extras: [],
   costs: {
     housekeepers: 2,
     housekeeperPay: 16000,

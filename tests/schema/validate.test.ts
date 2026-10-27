@@ -54,6 +54,15 @@ describe('validate', () => {
     expect(overlap.errors).toEqual([{ path: 'lease.rentSteps[1]', message: 'Rent steps 1 and 2 both cover some of the same years.' }]);
   });
 
+  test('custom extras are filled from defaults and must sit in a section that exists', () => {
+    const r = validate({ ...minimal, extras: [{ name: 'Kayaks', sectionId: 'main' }] });
+    expect(r.errors).toEqual([]);
+    expect(r.plan?.extras[0]).toMatchObject({ id: 'extra-1', name: 'Kayaks', on: true, rampsUp: true, income: { peak: 0 } });
+    expect(validate(minimal).plan?.extras).toEqual([]);
+    const lost = validate({ ...minimal, extras: [{ name: 'Kayaks', sectionId: 'jetty' }] });
+    expect(lost.errors[0]).toEqual({ path: 'extras[0].sectionId', message: expect.stringMatching(/Kayaks.*jetty/) });
+  });
+
   test('unknown fields are ignored with a warning', () => {
     const r = validate({ ...minimal, colour: 'blue', lease: { ...minimal.lease, landlord: 'Mr D' } });
     expect(r.ok).toBe(true);

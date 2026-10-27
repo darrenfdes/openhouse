@@ -51,7 +51,7 @@ export function sectionWarnings(plan: Plan): string[] {
   for (const r of plan.rooms) add(r.sectionId, r.count * r.areaM2);
   for (const s of plan.subleases) add(s.sectionId, s.areaM2);
   const { cafe, cowork, pool } = plan.cards;
-  for (const c of [cafe, cowork, pool]) if (c.on) add(c.sectionId, c.areaM2);
+  for (const c of [cafe, cowork, pool, ...plan.extras]) if (c.on) add(c.sectionId, c.areaM2);
   return plan.sections
     .filter((s) => (used.get(s.id) ?? 0) > s.areaM2)
     .map((s) => `${s.name} holds ${Math.round(used.get(s.id)!)} m² of use in ${Math.round(s.areaM2)} m².`);

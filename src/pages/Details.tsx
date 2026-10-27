@@ -1,5 +1,6 @@
 // Advanced mode: every field of the plan, one settings section per part.
 import { useEffect, type ReactNode } from 'react';
+import { CardEditors, ExtrasEditor } from '../components/Extras';
 import { NumberField, SelectField, TextField } from '../components/fields';
 import { Term } from '../components/Term';
 import { setLeaseYears, setPartners } from '../lib/easy';
@@ -207,35 +208,11 @@ export function Details() {
       </Set>
 
       <Set id="cards" title="Cards" desc="What each card costs to build and run, what it earns, and where it sits." term="card">
-        {(['cafe', 'cowork', 'pool', 'powerBackup', 'kitchen'] as const).map((k) => {
-          const c = plan.cards[k];
-          const title = { cafe: 'Café, run by us', cowork: 'Co-working', pool: 'Pool', powerBackup: 'Power backup', kitchen: 'Kitchen and catering' }[k];
-          return (
-            <div className="item" key={k}>
-              <div className="item-head">
-                <strong>{title}</strong>
-                <label className="field-unit"><input type="checkbox" role="switch" className="switch" checked={c.on} onChange={(e) => put(['cards', k, 'on'], e.target.checked)} /> <span>{c.on ? 'On' : 'Off'}</span></label>
-              </div>
-              <div className="fields">
-                <SelectField label="Section" value={c.sectionId} options={sectionOpts} onChange={(v) => put(['cards', k, 'sectionId'], v)} />
-                {num(['cards', k, 'build'], 'Build cost', 'rs')}
-                {'monthly' in c && num(['cards', k, 'monthly'], k === 'cowork' ? 'Income a month' : 'Running cost a month', 'rs')}
-                {'areaM2' in c && num(['cards', k, 'areaM2'], 'Area', 'm2')}
-                {k === 'pool' && num(['cards', 'pool', 'rateLift'], 'Lift on nightly rates', 'pct', 0, 2)}
-                {k === 'cafe' && (
-                  <>
-                    {num(['cards', 'cafe', 'ticket'], 'Average bill', 'rs')}
-                    {num(['cards', 'cafe', 'foodCost'], 'Food cost', 'pct', 0, 1)}
-                    {num(['cards', 'cafe', 'cookPay'], 'Cook pay', 'rs')}
-                    {num(['cards', 'cafe', 'helperPay'], 'Kitchen helper pay', 'rs')}
-                    {num(['cards', 'cafe', 'serverPay'], 'Server pay', 'rs')}
-                  </>
-                )}
-              </div>
-              {k === 'cafe' && seasonFields(['cards', 'cafe', 'covers'], 'count', (s) => `Covers a day, ${s}`)}
-            </div>
-          );
-        })}
+        <CardEditors plan={plan} set={set} />
+      </Set>
+
+      <Set id="extras" title="Your own extras" desc="Anything else the place could do: kayaks, a spa room, bike hire. Give each a build cost, a running cost and its income in each season.">
+        <ExtrasEditor plan={plan} set={set} />
       </Set>
 
       <Set id="costs" title="Running costs" desc="Monthly costs in today’s money. Pay rises yearly; other costs follow inflation. Choose who pays each line." term="paidBy">

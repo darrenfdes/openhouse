@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import { runPlan } from '@/engine';
-import { blank, tenant, years } from './fixture';
+import { blank, extra, tenant, years } from './fixture';
 
 describe('rent steps', () => {
   test('each lease year pays its own step; rent-free months pay nothing', () => {
@@ -144,6 +144,34 @@ describe('cards', () => {
     const r = runPlan(blank({ cards: { ...p.cards, powerBackup: { ...p.cards.powerBackup, on: true, build: 400000, monthly: 8000 } } }));
     expect(r.capex.depreciable).toBe(400000);
     expect(r.years[0].cardsRunning).toBe(96000);
+  });
+});
+
+describe('custom extras', () => {
+  // Goa seasons over a January lease: 3 peak, 4 shoulder, 1 low and 4 monsoon months.
+  const kayaks = extra({ income: { peak: 1000, shoulder: 500, low: 0, monsoon: 100 }, monthly: 200, build: 200000 });
+
+  test('an extra earns its income by season and costs its running cost each month', () => {
+    const y = runPlan(blank({ extras: [kayaks] })).years[0];
+    expect(y.extrasRev).toBe(3 * 1000 + 4 * 500 + 4 * 100);
+    expect(y.cardsRunning).toBe(12 * 200);
+    expect(y.bySection.get('yard')).toBe(5400 - 2400);
+  });
+
+  test('its build is part of the fit-out', () => {
+    expect(runPlan(blank({ extras: [kayaks] })).capex.depreciable).toBe(200000);
+  });
+
+  test('an extra switched off does nothing', () => {
+    const r = runPlan(blank({ extras: [{ ...kayaks, on: false }] }));
+    expect(r.years[0].extrasRev).toBe(0);
+    expect(r.capex.depreciable).toBe(0);
+  });
+
+  test('income that ramps up follows the first years’ ramp; fixed income does not', () => {
+    const slow = { ...blank().assumptions, ramp: [0.5, 0.5, 0.5] as [number, number, number] };
+    expect(runPlan(blank({ extras: [kayaks], assumptions: slow })).years[0].extrasRev).toBe(2700);
+    expect(runPlan(blank({ extras: [{ ...kayaks, rampsUp: false }], assumptions: slow })).years[0].extrasRev).toBe(5400);
   });
 });
 

@@ -5,6 +5,7 @@
 - **Plan**: one complete scenario for a property: sections, lease, operator, cards, subleases, partners. Saved and shared as `openhouse/v1` JSON.
 - **Section**: a named part of the property (name, type, area in m2, optional parent, note). Everything placed in the property sits in a section.
 - **Card**: a switchable part of a plan (rooms, café, co-working, pool, power backup, kitchen) with build cost, running cost and income.
+- **Extra**: a card the partners define themselves (kayaks, a spa room, bike hire): a section, area, build cost, running cost a month and income a month by season, which either grows with guests in the first two years or is full from opening.
 - **Sublease**: a tenant using part of the property (café, padel, shop, yoga, other). Pays fixed rent, a share of sales, or the higher of a minimum and a share.
 - **Operator**: who runs guest stays: `self` (per-room pricing, booking-site fee), `stayvista` (whole-villa rate, revenue cut) or `mixed`.
 - **Rent steps**: a list of (from year, to year, monthly rent) covering the lease.

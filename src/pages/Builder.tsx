@@ -2,7 +2,8 @@
 // everything else starts from the defaults and stays editable in All settings.
 import { useMemo, useState, type ReactNode } from 'react';
 import { JCurve } from '../components/JCurve';
-import { NumberField, SelectField, SwitchRow, TextField } from '../components/fields';
+import { CardEditors, ExtrasEditor } from '../components/Extras';
+import { NumberField, SelectField, TextField } from '../components/fields';
 import { Term } from '../components/Term';
 import { runBand } from '../engine';
 import { addSection, removeSection, startFrom, type Start } from '../lib/builder';
@@ -20,13 +21,6 @@ type Path = (string | number)[];
 const cap = (s: string) => s[0].toUpperCase() + s.slice(1);
 const getIn = (obj: unknown, path: Path): unknown => path.reduce<unknown>((o, k) => (o as Record<string | number, unknown>)?.[k], obj);
 const OPERATOR_LABEL: Record<OperatorKind, string> = { self: 'Ourselves', stayvista: 'StayVista', mixed: 'StayVista in peak, us the rest' };
-const CARDS: { key: keyof Plan['cards']; title: string; sub: (p: Plan) => string }[] = [
-  { key: 'cafe', title: 'Café, run by us', sub: (p) => `${lakh(p.cards.cafe.build)} to build` },
-  { key: 'cowork', title: 'Co-working', sub: (p) => `${lakh(p.cards.cowork.build)} to build` },
-  { key: 'pool', title: 'Pool', sub: (p) => `${lakh(p.cards.pool.build)} to build, lifts room rates` },
-  { key: 'powerBackup', title: 'Power backup', sub: (p) => `${lakh(p.cards.powerBackup.build)} to build` },
-  { key: 'kitchen', title: 'Kitchen and catering', sub: (p) => `${lakh(p.cards.kitchen.build)} to build` },
-];
 
 /** Rent rises 5% a year after three flat years, or stays flat for the whole lease. */
 const escalates = (p: Plan) => p.lease.rentSteps.length > 1;
@@ -182,19 +176,9 @@ export function Builder({ newProject }: { newProject: boolean }) {
             </div>
           </Step>
 
-          <Step n={++n} title={<Term k="card">Extras</Term>} desc="Switch on what this plan includes. Their costs start from rough figures; refine them in All settings.">
-            <div className="rows">
-              {CARDS.map((c) => (
-                <SwitchRow key={c.key} title={c.title} sub={c.sub(plan)} checked={plan.cards[c.key].on} onChange={(on) => put(['cards', c.key, 'on'], on)} />
-              ))}
-            </div>
-            {plan.sections.length > 1 && CARDS.some((c) => plan.cards[c.key].on) && (
-              <div className="fields">
-                {CARDS.filter((c) => plan.cards[c.key].on).map((c) => (
-                  <SelectField key={c.key} label={`${c.title} in`} value={plan.cards[c.key].sectionId} options={sectionOpts} onChange={(v) => put(['cards', c.key, 'sectionId'], v)} />
-                ))}
-              </div>
-            )}
+          <Step n={++n} title={<Term k="card">Extras</Term>} desc="Switch on what this plan includes and set its costs, or add your own: kayaks, a spa room, bike hire.">
+            <CardEditors plan={plan} set={setPlan} onlyWhenOn />
+            <ExtrasEditor plan={plan} set={setPlan} />
           </Step>
 
           <Step n={++n} title={<Term k="totalCash">Money in</Term>} desc="What it costs to open, and who puts it in.">

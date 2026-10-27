@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest';
 import { runPlan } from '@/engine';
 import { addSection, blankPlan, removeSection, startFrom } from '@/lib/builder';
+import { DEFAULT_EXTRA } from '@/schema/defaults';
 import { validate } from '@/schema/validate';
 import { templates } from '@/templates';
 
@@ -31,6 +32,8 @@ describe('plan builder', () => {
     const plan = removeSection(templates.A, 'wing-first');
     expect(plan.sections.map((s) => s.id)).not.toContain('wing-first');
     expect(plan.rooms.find((r) => r.id === 'wing-first')!.sectionId).toBe('old-house');
+    const withExtra = { ...templates.A, extras: [{ ...DEFAULT_EXTRA, id: 'spa', sectionId: 'land' }] };
+    expect(removeSection(withExtra, 'land').extras[0].sectionId).toBe('old-house');
     expect(validate(JSON.parse(JSON.stringify(plan))).errors).toEqual([]);
   });
 

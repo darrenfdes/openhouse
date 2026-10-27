@@ -24,6 +24,7 @@ Everything else is optional; missing fields are filled from Open House's default
 - "stays": { "occupancy": { "peak", "shoulder", "low", "monsoon" }, "peakPremium", "lowDiscount", "nomadRooms",
   "nomadMonthly", "nomadBookingShare", "guestsPerRoom", "breakfastCost", "roomVarCost" }
 - "cards": { "cafe", "cowork", "pool", "powerBackup", "kitchen" }, each { "on": true|false, "sectionId", "build", ... }
+- "extras": [{ "name", "on", "sectionId", "areaM2", "build", "monthly" (running cost a month), "income": { "peak", "shoulder", "low", "monsoon" } (income a month), "rampsUp": true|false }] for anything else the place earns from
 - "costs": { "housekeepers", "housekeeperPay", "caretakerPay", "staffWelfare", "bonusRate", "partnerSalary", "utilities",
   "utilitiesFixedShare", "other", "paidBy": { "housekeeping" | "caretaker" | "guestCosts" | "partnerSalary" | "utilities" | "other": "partners" | "operator" } }
 - "build": { "construction", "constructionContingency", "bathPerRoom", "furnishPerRoom", "workingCapital",

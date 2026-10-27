@@ -1,5 +1,5 @@
-import { DEFAULT_PLAN, DEFAULT_SUBLEASE } from '@/schema/defaults';
-import type { Plan, Sublease } from '@/schema/plan';
+import { DEFAULT_EXTRA, DEFAULT_PLAN, DEFAULT_SUBLEASE } from '@/schema/defaults';
+import type { Extra, Plan, Sublease } from '@/schema/plan';
 
 /** A plan with nothing in it: one year, Rs 10,000 rent, no rooms, no costs, no tax, no inflation. */
 export function blank(over: Partial<Plan> = {}): Plan {
@@ -41,4 +41,6 @@ export const tenant = (over: Partial<Sublease> = {}): Sublease => ({
   ...over,
 });
 
-export const years = (n: number): Plan['lease'] => ({ ...blank().lease, years: n });
+export const extra = (over: Partial<Extra> = {}): Extra => ({ ...DEFAULT_EXTRA, id: 'x', name: 'Kayaks', on: true, sectionId: 'yard', ...over });
+
+export const years =(n: number): Plan['lease'] => ({ ...blank().lease, years: n });

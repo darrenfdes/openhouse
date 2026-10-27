@@ -33,6 +33,8 @@ export interface Year {
   nomadRev: number;
   cafeRev: number;
   coworkRev: number;
+  /** Income from the partners' own extras. */
+  extrasRev: number;
   subleaseRev: number;
   commission: number;
   varCost: number;
@@ -117,6 +119,7 @@ export function capex(plan: Plan): Capex {
   if (cards.pool.on) fit.push({ label: 'Pool', amount: cards.pool.build, group: 'fit', sectionId: cards.pool.sectionId });
   if (cards.powerBackup.on) fit.push({ label: 'Power backup (generator and inverter)', amount: cards.powerBackup.build, group: 'fit', sectionId: cards.powerBackup.sectionId });
   if (cards.kitchen.on) fit.push({ label: 'Kitchen and catering', amount: cards.kitchen.build, group: 'fit', sectionId: cards.kitchen.sectionId });
+  for (const x of plan.extras) if (x.on) fit.push({ label: x.name, amount: x.build, group: 'fit', sectionId: x.sectionId });
   for (const s of plan.subleases) {
     if (s.partnerFitout) fit.push({ label: `Fit-out for ${s.name}`, amount: s.partnerFitout, group: 'fit', sectionId: s.sectionId });
   }
@@ -138,7 +141,7 @@ export function capex(plan: Plan): Capex {
 
 function emptyYear(): Year {
   return {
-    roomRev: 0, nomadRev: 0, cafeRev: 0, coworkRev: 0, subleaseRev: 0,
+    roomRev: 0, nomadRev: 0, cafeRev: 0, coworkRev: 0, extrasRev: 0, subleaseRev: 0,
     commission: 0, varCost: 0, cafeCost: 0, rent: 0, staff: 0,
     staffKitchen: 0, staffHousekeeping: 0, staffCaretaker: 0, staffWelfare: 0, partner: 0,
     utilities: 0, other: 0, cardsRunning: 0, roomNights: 0, availNights: 0,
@@ -282,6 +285,9 @@ export function runPlan(plan: Plan, opts: RunOptions = {}): Result {
       const cowork = cards.cowork.on ? cards.cowork.monthly * ramp * infl : 0;
       y.coworkRev += cowork;
       rev += cowork;
+      const extras = plan.extras.filter((x) => x.on).map((x) => ({ x, income: x.income[s] * (x.rampsUp ? ramp : 1) * infl, running: x.monthly * infl }));
+      for (const e of extras) y.extrasRev += e.income;
+      rev += extras.reduce((t, e) => t + e.income, 0);
 
       const pay = Math.pow(1 + assumptions.payRise, ly);
       if (cards.cafe.on) kitchen = (cards.cafe.cookPay + cards.cafe.helperPay + cards.cafe.serverPay) * pay;
@@ -300,7 +306,7 @@ export function runPlan(plan: Plan, opts: RunOptions = {}): Result {
       y.utilities += utilities;
       const other = paid('other') ? costs.other * infl : 0;
       y.other += other;
-      const running = [cards.pool, cards.powerBackup, cards.kitchen].reduce((t, c) => t + (c.on ? c.monthly * infl : 0), 0);
+      const running = [cards.pool, cards.powerBackup, cards.kitchen].reduce((t, c) => t + (c.on ? c.monthly * infl : 0), 0) + extras.reduce((t, e) => t + e.running, 0);
       y.cardsRunning += running;
 
       cost += commission + varCost + cafeRev * (cards.cafe.on ? cards.cafe.foodCost : 0) + staff + utilities + other + running;
@@ -310,6 +316,7 @@ export function runPlan(plan: Plan, opts: RunOptions = {}): Result {
       if (cards.cafe.on) book(y.bySection, cards.cafe.sectionId, cafeRev * (1 - cards.cafe.foodCost) - kitchen);
       if (cards.cowork.on) book(y.bySection, cards.cowork.sectionId, cowork);
       for (const c of [cards.pool, cards.powerBackup, cards.kitchen]) if (c.on) book(y.bySection, c.sectionId || null, -c.monthly * infl);
+      for (const e of extras) book(y.bySection, e.x.sectionId, e.income - e.running);
       book(y.bySection, null, -(care + welfare + partner + utilities + other));
     }
     monthEbitda.push(rev - cost);
@@ -325,7 +332,7 @@ export function runPlan(plan: Plan, opts: RunOptions = {}): Result {
   const flows = [-cx.total];
   years.forEach((y, idx) => {
     const last = idx === leaseYears - 1;
-    y.revenue = y.roomRev + y.nomadRev + y.cafeRev + y.coworkRev + y.subleaseRev;
+    y.revenue = y.roomRev + y.nomadRev + y.cafeRev + y.coworkRev + y.extrasRev + y.subleaseRev;
     y.opex = y.commission + y.varCost + y.cafeCost + y.rent + y.staff + y.utilities + y.other + y.cardsRunning;
     y.ebitda = y.revenue - y.opex;
     y.depreciation = dep;

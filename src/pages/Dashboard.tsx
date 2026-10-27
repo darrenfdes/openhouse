@@ -95,6 +95,9 @@ function CardsPanel({ plan, set }: { plan: Plan; set: (p: Plan) => void }) {
         <SwitchRow title="Pool" sub={`${lakh(c.pool.build)} to build, +${pct(c.pool.rateLift, 0)} on rates`} checked={c.pool.on} onChange={toggle('pool')} />
         <SwitchRow title="Power backup" sub={`${lakh(c.powerBackup.build)}, ${rupees(c.powerBackup.monthly)} a month`} checked={c.powerBackup.on} onChange={toggle('powerBackup')} />
         <SwitchRow title="Kitchen and catering" sub={`${lakh(c.kitchen.build)} to build`} checked={c.kitchen.on} onChange={toggle('kitchen')} />
+        {plan.extras.map((x, i) => (
+          <SwitchRow key={x.id} title={x.name} sub={`${lakh(x.build)} to build, ${rupees(x.income.peak)} a month in peak`} checked={x.on} onChange={(on) => set(setIn(plan, ['extras', i, 'on'], on))} />
+        ))}
         {plan.subleases.map((s, i) => (
           <div className="row" key={s.id}>
             <div className="row-main">
@@ -108,6 +111,7 @@ function CardsPanel({ plan, set }: { plan: Plan; set: (p: Plan) => void }) {
       <div className="actions" style={{ justifyContent: 'flex-start', marginTop: 8 }}>
         <button type="button" className="btn" onClick={() => addSublease('cafe')}>Add café brand</button>
         <button type="button" className="btn" onClick={() => addSublease('padel')}>Add padel court</button>
+        <button type="button" className="btn" onClick={() => navigate('details', '#extras')}>Add your own extra</button>
       </div>
     </section>
   );

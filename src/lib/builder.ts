@@ -18,6 +18,7 @@ function rehome(plan: Plan): Plan {
     sections: plan.sections.map(({ parentId, ...s }) => (parentId && ids.has(parentId) ? { ...s, parentId } : s)),
     rooms: plan.rooms.map((r) => ({ ...r, sectionId: at(r.sectionId) })),
     cards,
+    extras: plan.extras.map((x) => ({ ...x, sectionId: at(x.sectionId) })),
     subleases: plan.subleases.map((t) => ({ ...t, sectionId: at(t.sectionId) })),
     build: { ...plan.build, lines: plan.build.lines.map((l) => (l.sectionId === undefined ? l : { ...l, sectionId: at(l.sectionId) })) },
   };
