@@ -1,0 +1,729 @@
+<title>Velsao House: Plans A–C</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gloock&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column; a sticky control rail beside the live numbers on wide screens, stacked on phones. Azulejo-blue accent on limewash. */
+:root {
+  --bg: #f6f7f9; --surface: #ffffff; --fg: #1b2030; --muted: #5d6478; --line: #dde1ea;
+  --accent: #1f4fa3; --accent-soft: #e5ecf8; --laterite: #a8432a;
+  --good: #1d7a4c; --warn: #a86a00; --bad: #b3261e;
+  --display: "Gloock", Georgia, serif; --body: "Public Sans", system-ui, sans-serif; --mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11141c; --surface: #191d28; --fg: #e8ebf2; --muted: #9aa2b6; --line: #2b3142;
+  --accent: #7ea6ee; --accent-soft: #1d2840; --laterite: #e0876f;
+  --good: #5cc48e; --warn: #e2a742; --bad: #f07b72; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11141c; --surface: #191d28; --fg: #e8ebf2; --muted: #9aa2b6; --line: #2b3142;
+  --accent: #7ea6ee; --accent-soft: #1d2840; --laterite: #e0876f;
+  --good: #5cc48e; --warn: #e2a742; --bad: #f07b72; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--fg); font: 15px/1.6 var(--body); }
+.wrap { max-width: 1120px; margin: 0 auto; padding-block: 32px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3 { font-family: var(--display); font-weight: 400; text-wrap: balance; margin: 0; line-height: 1.15 }
+h1 { font-size: clamp(2rem, 5vw, 3rem) }
+h2 { font-size: 1.6rem }
+h3 { font-size: 1.15rem }
+p { margin: 0; max-width: 68ch }
+.eyebrow { font: 600 .72rem/1 var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--muted) }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums }
+.tile-rule { height: 10px; margin: 28px 0; border-radius: 2px; opacity: .55;
+  background: conic-gradient(from 45deg at 50% 50%, var(--accent) 0 25%, transparent 0 50%, var(--accent) 0 75%, transparent 0) 0 0/10px 10px; }
+header { display: grid; gap: 10px }
+header .meta { color: var(--muted) }
+section { display: grid; gap: 16px; margin-top: 44px }
+.verdict { border: 1px solid var(--line); border-left: 4px solid var(--warn); background: var(--surface); padding: 18px 20px; border-radius: 6px; display: grid; gap: 8px }
+.verdict strong { font-family: var(--display); font-weight: 400; font-size: 1.3rem; color: var(--warn) }
+.grid-main { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 28px; align-items: start }
+@media (max-width: 860px) { .grid-main { grid-template-columns: minmax(0, 1fr) } aside { position: static !important } }
+aside { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 18px; display: grid; gap: 14px }
+.presets { display: flex; gap: 6px; flex-wrap: wrap }
+.presets button { flex: 1; font: 600 .8rem var(--body); padding: 7px 8px; border-radius: 5px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); cursor: pointer }
+.presets button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--surface) }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
+.ctl { display: grid; gap: 4px }
+.ctl label { display: flex; justify-content: space-between; gap: 8px; font-size: .84rem; color: var(--muted) }
+.ctl label output { color: var(--fg); font-family: var(--mono); font-size: .82rem }
+.ctl input[type=range] { width: 100%; accent-color: var(--accent) }
+.ctl.check label { justify-content: flex-start; align-items: center; color: var(--fg); cursor: pointer }
+.ctl .hint { font-size: .74rem; color: var(--muted); line-height: 1.4 }
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 8px; overflow: hidden }
+@media (max-width: 640px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)) } }
+.kpi { background: var(--surface); padding: 14px 16px; display: grid; gap: 4px; align-content: start }
+.kpi .v { font: 500 1.5rem/1.1 var(--mono); font-variant-numeric: tabular-nums }
+.kpi .s { font-size: .78rem; color: var(--muted) }
+.pill { display: inline-block; font: 600 .7rem/1 var(--body); letter-spacing: .04em; padding: 4px 7px; border-radius: 99px; text-transform: uppercase }
+.pill.good { background: color-mix(in srgb, var(--good) 15%, transparent); color: var(--good) }
+.pill.warn { background: color-mix(in srgb, var(--warn) 15%, transparent); color: var(--warn) }
+.pill.bad { background: color-mix(in srgb, var(--bad) 15%, transparent); color: var(--bad) }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 18px; display: grid; gap: 12px; min-width: 0 }
+.scroll { overflow-x: auto }
+table { border-collapse: collapse; width: 100%; font-size: .84rem }
+th, td { padding: 7px 8px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap }
+th:first-child, td:first-child { text-align: left; position: sticky; left: 0; background: var(--surface) }
+thead th { font: 600 .72rem var(--body); letter-spacing: .06em; text-transform: uppercase; color: var(--muted) }
+td.num { font-family: var(--mono); font-variant-numeric: tabular-nums }
+tr.total td { font-weight: 600; border-top: 1.5px solid var(--fg) }
+tr.sub td:first-child { padding-left: 18px; color: var(--muted) }
+.neg { color: var(--bad) }
+svg text { fill: var(--muted); font: 11px var(--mono) }
+.ladder { display: grid; gap: 10px }
+.rung { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; align-items: baseline }
+.bar { grid-column: 1 / -1; height: 8px; background: var(--accent-soft); border-radius: 4px; position: relative; overflow: visible }
+.bar i { position: absolute; top: -3px; width: 3px; height: 14px; background: var(--fg); border-radius: 1px }
+.bar b { position: absolute; top: 0; height: 8px; background: color-mix(in srgb, var(--muted) 35%, transparent); border-radius: 4px }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px }
+@media (max-width: 760px) { .two { grid-template-columns: minmax(0, 1fr) } }
+ul.clean { margin: 0; padding-left: 18px; display: grid; gap: 6px }
+ul.clean li { max-width: 68ch }
+.rooms { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px }
+.room { border: 1px solid var(--line); border-radius: 6px; padding: 12px; background: var(--surface); display: grid; gap: 2px }
+.room .tag { font: 600 .68rem var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--accent) }
+.room.her .tag { color: var(--laterite) }
+.room .area { font-family: var(--mono); font-size: .8rem; color: var(--muted) }
+.timeline { display: grid; gap: 0; border-left: 2px solid var(--line); margin-left: 6px }
+.step { position: relative; padding: 0 0 16px 20px; display: grid; gap: 2px }
+.step::before { content: ""; position: absolute; left: -7px; top: 5px; width: 12px; height: 12px; border-radius: 50%; background: var(--accent) }
+.step .when { font: 500 .78rem var(--mono); color: var(--muted) }
+.src { font-size: .78rem; color: var(--muted) }
+.src a { color: var(--accent) }
+footer { margin-top: 48px; color: var(--muted); font-size: .8rem }
+</style>
+
+<style>
+:root { --planA: #1f4fa3; --planB: #a8432a; --planC: #2c7a5f }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --planA: #7ea6ee; --planB: #e0876f; --planC: #6cc7a4 } }
+:root[data-theme="dark"] { --planA: #7ea6ee; --planB: #e0876f; --planC: #6cc7a4 }
+.vs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 8px; overflow: hidden }
+.vs .col { background: var(--surface); padding: 16px; display: grid; gap: 10px; align-content: start }
+.vs .col h3 { display: flex; align-items: center; gap: 8px }
+.dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none }
+.dot.a { background: var(--planA) } .dot.b { background: var(--planB) } .dot.c { background: var(--planC) }
+.vs dl { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; margin: 0 }
+.vs dt { color: var(--muted); font-size: .85rem }
+.vs dd { margin: 0; font: 500 1rem var(--mono); font-variant-numeric: tabular-nums; text-align: right }
+.vs dd.big { font-size: 1.35rem }
+@media (max-width: 1100px) { .vs dd.big { font-size: 1.1rem } }
+@media (max-width: 760px) { .vs { grid-template-columns: minmax(0, 1fr) } }
+.tabs { display: flex; gap: 6px }
+.tabs button { font: 600 .8rem var(--body); padding: 6px 12px; border-radius: 5px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); cursor: pointer }
+.tabs button[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg) }
+.legend { display: flex; gap: 16px; font-size: .8rem; color: var(--muted); flex-wrap: wrap }
+.legend span { display: inline-flex; align-items: center; gap: 6px }
+.ctl-group { display: grid; gap: 12px; padding-top: 10px; border-top: 1px solid var(--line) }
+.ctl-group > .eyebrow { display: flex; gap: 6px; align-items: center }
+.focus { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-bottom: 16px }
+.focus .eyebrow { margin-right: 4px }
+.focus button { display: inline-flex; align-items: center; gap: 7px; font: 600 .82rem var(--body); padding: 7px 12px; border-radius: 99px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); cursor: pointer }
+.focus button[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg) }
+.vs[data-n="1"] { grid-template-columns: minmax(0, 1fr) }
+.vs[data-n="1"] dl { grid-template-columns: repeat(2, minmax(0, 1fr) auto); column-gap: 24px }
+@media (max-width: 640px) { .vs[data-n="1"] dl { grid-template-columns: 1fr auto } }
+.callouts { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px }
+.callout { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; display: grid; gap: 4px }
+.callout .v { font: 500 1.3rem var(--mono); font-variant-numeric: tabular-nums }
+</style>
+
+<div class="wrap">
+<header>
+  <span class="eyebrow">Feasibility, alternate version · Velsao, South Goa · October 2026</span>
+  <h1>Velsao House: three ways to start</h1>
+  <p class="meta">The owner won't pay to finish the building or cut the rent, so every plan pays ₹80k a month, rent-free only during the 6-month fit-out.</p>
+  <ul class="clean meta">
+    <li><b>Plan A, full fit-out:</b> Dulce's ₹35 L construction plus a 20% buffer and good furnishing, 6 rooms with café and co-working. About ₹1.02 Cr in total.</li>
+    <li><b>Plan B, ₹40 L lean:</b> the same 6 rooms, café and co-working on a ₹40 L build budget, plus deposit and buffer. About ₹50 L in total.</li>
+    <li><b>Plan C, ₹20 L rooms only:</b> 5 rooms (3 new, 2 heritage), no kitchen, café, breakfast or co-working. ₹20 L all-in, including deposit and buffer.</li>
+  </ul>
+  <p class="meta">All figures are in ₹ lakh (1 L = ₹1,00,000) unless marked.</p>
+</header>
+
+<div class="tile-rule" aria-hidden="true"></div>
+
+<div class="focus" role="group" aria-label="Plans to show">
+  <span class="eyebrow">Show</span>
+  <button id="fAll" data-focus="all" aria-pressed="true">All plans</button>
+  <button id="fA" data-focus="A" aria-pressed="false"><i class="dot a"></i>Plan A · full fit-out</button>
+  <button id="fB" data-focus="B" aria-pressed="false"><i class="dot b"></i>Plan B · ₹40 L lean</button>
+  <button id="fC" data-focus="C" aria-pressed="false"><i class="dot c"></i>Plan C · ₹20 L rooms only</button>
+</div>
+
+<div class="verdict" id="verdict"><strong></strong><p id="verdictText"></p></div>
+
+<section>
+<div class="grid-main">
+  <aside aria-label="Assumptions">
+    <div class="presets" role="group" aria-label="Scenario">
+      <button id="pCons" data-preset="cons" aria-pressed="false">Conservative</button>
+      <button id="pBase" data-preset="base" aria-pressed="true">Base</button>
+      <button id="pOpt" data-preset="opt" aria-pressed="false">Optimistic</button>
+    </div>
+    <div class="ctl-group">
+      <span class="eyebrow">Both plans</span>
+      <div class="ctl"><label for="occ">Steady-state occupancy <output id="o-occ"></output></label>
+        <input type="range" id="occ" min="0.5" max="1.4" step="0.01">
+        <span class="hint">Majorda listings run 32%, Benaulim 38%. Includes monsoon monthly stays.</span></div>
+      <div class="ctl"><label for="adrNew">New-wing room rate <output id="o-adrNew"></output></label>
+        <input type="range" id="adrNew" min="3000" max="8000" step="250"></div>
+      <div class="ctl"><label for="adrHer">Heritage suite rate <output id="o-adrHer"></output></label>
+        <input type="range" id="adrHer" min="5000" max="12000" step="250"></div>
+      <div class="ctl"><label for="nomad">Rooms on monsoon monthly stays <output id="o-nomad"></output></label>
+        <input type="range" id="nomad" min="0" max="6" step="1"></div>
+      <div class="ctl"><label for="cafe">Café covers vs base <output id="o-cafe"></output></label>
+        <input type="range" id="cafe" min="0.4" max="1.6" step="0.05"></div>
+    </div>
+    <div class="ctl-group" data-plan="A">
+      <span class="eyebrow"><i class="dot a"></i>Plan A, full fit-out</span>
+      <div class="ctl"><label for="rentA">Monthly rent <output id="o-rentA"></output></label>
+        <input type="range" id="rentA" min="50000" max="120000" step="5000">
+        <span class="hint">Rent-free only during the 6-month fit-out.</span></div>
+      <div class="ctl"><label for="constr">Dulce's construction estimate <output id="o-constr"></output></label>
+        <input type="range" id="constr" min="2000000" max="6000000" step="100000"></div>
+      <div class="ctl"><label for="overrun">Overrun on her estimate <output id="o-overrun"></output></label>
+        <input type="range" id="overrun" min="0" max="1" step="0.05">
+        <span class="hint">A 20% contingency is already included. This adds overrun beyond it.</span></div>
+    </div>
+    <div class="ctl-group" data-plan="B">
+      <span class="eyebrow"><i class="dot b"></i>Plan B, ₹40 L lean</span>
+      <div class="ctl"><label for="rentB">Monthly rent <output id="o-rentB"></output></label>
+        <input type="range" id="rentB" min="50000" max="120000" step="5000">
+        <span class="hint">Rent-free only during the 6-month fit-out.</span></div>
+      <div class="ctl"><label for="budget">Overrun on the ₹40 L <output id="o-budget"></output></label>
+        <input type="range" id="budget" min="0" max="1" step="0.05">
+        <span class="hint">There's no contingency inside the ₹40 L. This scales every build and fit-out line.</span></div>
+    </div>
+    <div class="ctl-group" data-plan="C">
+      <span class="eyebrow"><i class="dot c"></i>Plan C, ₹20 L rooms only</span>
+      <div class="ctl"><label for="rentC">Monthly rent <output id="o-rentC"></output></label>
+        <input type="range" id="rentC" min="40000" max="120000" step="5000">
+        <span class="hint">Rent-free only during the 6-month fit-out. Rooms sell ₹500 lower without breakfast.</span></div>
+      <div class="ctl"><label for="budgetC">Overrun on the ₹20 L <output id="o-budgetC"></output></label>
+        <input type="range" id="budgetC" min="0" max="1" step="0.05">
+        <span class="hint">Scales the ₹15 L of build and fit-out. The deposit and buffer stay fixed.</span></div>
+    </div>
+  </aside>
+
+  <div style="display:grid;gap:20px;min-width:0">
+    <div class="vs" id="vs"></div>
+
+    <div class="card">
+      <div><h3>Cumulative cash, both plans</h3>
+      <p class="src">Running total after investment and tax. Payback is where each line crosses zero. Year 1 starts at signing and includes fit-out.</p></div>
+      <div class="legend"><span><i class="dot a"></i>Plan A, full fit-out</span><span><i class="dot b"></i>Plan B, ₹40 L lean</span><span><i class="dot c"></i>Plan C, ₹20 L rooms only</span></div>
+      <div class="scroll"><svg id="chart" viewBox="0 0 640 260" width="100%" role="img" aria-label="Cumulative cash for Plans A, B and C"></svg></div>
+    </div>
+
+    <div class="callouts" id="callouts"></div>
+  </div>
+</div>
+</section>
+
+<section>
+  <h2>What each plan needs to operate at</h2>
+  <div class="card">
+    <p class="src">Occupancy needed in year 4, the first full steady year, for each outcome. The grey band is the 32–38% that South Goa listings achieve today. The coloured tick is each plan at your current settings.</p>
+    <div class="scroll"><table id="needs"></table></div>
+  </div>
+</section>
+
+<section>
+  <h2>Staff and what they cost</h2>
+  <p>Plans A and B run the team below. Plan C has no kitchen, so it keeps only 1 maid, the caretaker and the on-site partner: about ₹39,000 a month in staff before the partner's salary. Pay is set from Goa job listings in 2025–26, against a hotel and restaurant minimum wage of ₹561–677 a day, about ₹14,600–17,600 a month. Pay rises 7% a year in the model.</p>
+  <div class="card"><div class="scroll"><table>
+    <thead><tr><th>Team</th><th>Role</th><th>₹ a month</th><th style="text-align:left">Evidence</th></tr></thead>
+    <tbody>
+      <tr><td>Kitchen</td><td style="text-align:left">Head cook, café and breakfast</td><td class="num">24,000</td><td style="text-align:left;white-space:normal">Goa cook and chef listings ₹17,500–26,000; Indeed's Goa chef average is about ₹24,700</td></tr>
+      <tr><td>Kitchen</td><td style="text-align:left">Kitchen helper / commis</td><td class="num">16,000</td><td style="text-align:left;white-space:normal">Commis at a Morjim resort ₹15,000–20,000 plus food; kitchen assistant in Panjim ₹15,000–18,000</td></tr>
+      <tr><td>Kitchen</td><td style="text-align:left">Server / barista</td><td class="num">16,000</td><td style="text-align:left;white-space:normal">Just above the minimum wage</td></tr>
+      <tr class="total"><td>Kitchen total</td><td></td><td class="num">56,000</td><td></td></tr>
+      <tr><td>Housekeeping</td><td style="text-align:left">2 maids / room attendants × ₹16,000</td><td class="num">32,000</td><td style="text-align:left;white-space:normal">Full-day maids in Goa ₹15,500–16,400</td></tr>
+      <tr><td>Caretaker</td><td style="text-align:left">Live-in: night watch, garden, small repairs</td><td class="num">18,000</td><td style="text-align:left;white-space:normal">Resort maintenance roles ₹16,000–22,000 (Calangute listings)</td></tr>
+      <tr><td>Staff food and housing</td><td style="text-align:left">6 staff × about ₹2,000</td><td class="num">12,000</td><td style="text-align:left;white-space:normal">Most Goa hospitality listings include meals</td></tr>
+      <tr><td>Bonus</td><td style="text-align:left">One month's pay a year, spread monthly</td><td class="num">8,800</td><td style="text-align:left;white-space:normal">8.33% of salaries</td></tr>
+      <tr class="total"><td>Staff total</td><td></td><td class="num">1,26,800</td><td></td></tr>
+      <tr><td>On-site partner</td><td style="text-align:left">Runs the property</td><td class="num">50,000</td><td style="text-align:left;white-space:normal">Kept separate from staff</td></tr>
+    </tbody></table></div>
+    <ul class="clean">
+      <li>One cook can't work 7 days a week. Plan a weekly day off: the helper covers a short menu, or the café closes one day a week.</li>
+      <li>With 6 staff you're under the 10-employee thresholds for ESI and most PF rules. Pay on time and in writing anyway.</li>
+      <li>Migrant staff are common in Goa. The caretaker's room and staff meals are part of the offer, not an extra.</li>
+    </ul>
+    <p class="src">Sources: <a href="https://in.indeed.com/Kitchen-jobs-in-Goa" target="_blank" rel="noopener">Indeed kitchen jobs in Goa</a> · <a href="https://www.jobhai.com/cook-chef-jobs-in-goa-page-2-ccty" target="_blank" rel="noopener">JobHai cook/chef jobs in Goa</a> · <a href="https://helpersnearme.com/workers/house-cleaning-maid-margao-goa" target="_blank" rel="noopener">Helpers Near Me, maids in Margao</a> · <a href="https://in.indeed.com/cmp/Silver-Shell-Resort/salaries" target="_blank" rel="noopener">Indeed resort salaries</a> · <a href="https://wageindicator.org/en-in/ai/work-in-india/minimum-wage/16756-goa/16902-residential-hotel-restaurant-or-eating-house/" target="_blank" rel="noopener">WageIndicator Goa minimum wage</a>.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Profit and loss over the lease</h2>
+  <div class="tabs" id="plTabs" role="group" aria-label="Plan">
+    <button id="tabA" data-plan="A" aria-pressed="true">Plan A</button>
+    <button id="tabB" data-plan="B" aria-pressed="false">Plan B</button>
+    <button id="tabC" data-plan="C" aria-pressed="false">Plan C</button>
+  </div>
+  <div class="card"><div class="scroll"><table id="pl"></table></div>
+  <p class="src">Rooms GST (5% at or below ₹7,500 a night) is charged on top and excluded. Tax is 31.2% for the LLP, after spreading the fit-out cost over 9 years. Costs rise 6% a year and pay 7% a year. In year 9 the deposit and working capital come back.</p></div>
+</section>
+
+<section>
+  <h2>Investment, side by side</h2>
+  <div class="two">
+    <div class="card"><div class="scroll"><table id="capex"></table></div></div>
+    <div class="card">
+      <h3>Before you rely on ₹40 L</h3>
+      <ul class="clean">
+        <li><b>Construction in Plan B is ₹22 L, ₹13 L below Dulce's ₹35 L.</b> Ask her what ₹22 L buys. Then decide what to cut: keep the sheet roof and insulate it, re-use floors where they're sound, and leave the false ceilings out.</li>
+        <li>The lean rooms get about ₹1.4 L each: an AC, a good bed, simple storage, linen and lights. Check that they still justify ₹5,000–7,500 a night in photos.</li>
+        <li>There's no contingency inside the ₹40 L. Old Goan houses hide termite damage, damp in laterite walls and drainage problems, so plan for a 25% overrun and use the slider.</li>
+        <li>Get two contractor quotes for a fixed price. Hold back 10% until snagging is complete.</li>
+        <li>Everything you build stays with the owner. Get the registered 9-year lease and lock-in signed before any work starts.</li>
+        <li><b>Plan C's ₹5.5 L of construction only covers finishing work:</b> paint, tiling patches, plumbing and wiring for 5 rooms. It can't wall and roof the upper floor, so the 3 new rooms must fit on the ground floor of the new section, or the plan fails.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>How to use the two plans with the owner</h2>
+  <div class="two">
+    <div class="card">
+      <h3>Opening position</h3>
+      <ul class="clean">
+        <li>You're adding ₹22–42 L of permanent value to the owner's house at ₹80k rent. Still ask for something in return: 3 extra rent-free months, or rent flat for 5 years instead of 3.</li>
+        <li>Start with Plan B. It needs half of Plan A's cash and earns the most per rupee. Plan C needs the least cash but has to fill far more of its rooms.</li>
+        <li>Either way: a 9-year registered lease, the owner locked in for 5 years or more, a commercial-use NOC, and written consent for the construction works.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Walk away if</h3>
+      <ul class="clean">
+        <li>Rent goes above ₹85k a month.</li>
+        <li>Itemised quotes for the Plan B scope come in above ₹50 L, which is 25% over the ₹40 L.</li>
+        <li>There's no registered lease with the commercial-use NOC, or the owner can end the lease before year 5.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Market check</h2>
+  <ul class="clean">
+    <li>South Goa listings: Majorda averages ₹6,129 a night at 32% occupancy, Benaulim ₹6,397 at 38%, Colva ₹6,502 at 35% (AirROI, trailing 12 months). These are per listing, and many listings are whole villas.</li>
+    <li>Goa's listings rose 66% in a year to 11,259, while the average rate stayed flat (Airbtics). Foreign arrivals are about 45% below 2017.</li>
+    <li>Heritage stays in the south sell at a premium: Silva Heritage in Benaulim charges about ₹8,200 with breakfast. The Velsao–Majorda belt has no co-working.</li>
+    <li>The workbook holds every assumption, its source, and a monthly model for each plan.</li>
+  </ul>
+  <p class="src">Sources: <a href="https://airroi.com/airbnb-data/india/goa/majorda" target="_blank" rel="noopener">AirROI Majorda</a> · <a href="https://airroi.com/airbnb-data/india/goa/benaulim" target="_blank" rel="noopener">AirROI Benaulim</a> · <a href="https://airbtics.com/annual-airbnb-revenue-in-goa-india" target="_blank" rel="noopener">Airbtics Goa</a>.</p>
+</section>
+
+<footer><p>A planning model, not financial advice. Plan A uses Dulce's unitemised ₹35 L estimate; Plans B and C split your ₹40 L and ₹20 L budgets as Claude estimated; fit-out costs, salaries and café covers are estimates to replace with quotes. Prepared October 2026.</p></footer>
+</div>
+
+<script>
+// Velsao heritage stay — Plan A: full fit-out on Dulce's ₹35 L estimate. Plan B: ₹40 L lean budget. Plan C: ₹20 L, 5 rooms, rooms only. All at ₹80k rent.
+// Monthly model over the lease. All money in ₹.
+const BASE = {
+  leaseYears: 9, startMonth: 1, rentEscalation: 0.05, flatYears: 3,
+  newRooms: 4, heritageRooms: 2,
+  adrNew: 5000, adrHeritage: 7500, peakPremium: 0.25, lowDiscount: 0.2,
+  occPeak: 0.6, occShoulder: 0.4, occLow: 0.25, occMonsoonNightly: 0.15,
+  nomadRooms: 3, nomadRate: 50000,
+  otaShare: 0.6, otaCommission: 0.17, nomadOtaShare: 0.3,
+  guestsPerRoom: 1.8, breakfastCost: 300, roomVarCost: 300,
+  cafeCovers: { peak: 35, shoulder: 22, low: 10, monsoon: 8 }, cafeTicket: 400, cafeFoodCost: 0.34,
+  coworkMonthly: 20000,
+  // Staff, ₹/month (Goa 2025–26 job listings; hotel minimum wage ₹561–677/day)
+  cookPay: 24000, kitchenHelperPay: 16000, serverPay: 16000, maids: 2, maidPay: 16000, caretakerPay: 18000,
+  staffWelfare: 12000, bonusRate: 0.0833,
+  partnerSalary: 50000, payRise: 0.07, utilities: 55000, fixedOther: 50000,
+  inflation: 0.06, taxRate: 0.312, occScale: 1, rateAdjust: 0,
+  padel: false, padelGroundRent: 40000, padelStartYear: 2,
+  // fit-out shared by both plans
+  furnishPerRoom: 300000, cafeFit: 700000, coworkFit: 250000, landscaping: 400000, services: 400000,
+  fitContingency: 0.1, legal: 200000, branding: 200000, depositMonths: 3, workingCapital: 800000,
+  constructionOverrun: 0, budgetOverrun: 0,
+};
+const PLANS = {
+  A: { ...BASE, name: 'Plan A', label: 'Full fit-out on Dulce ₹35 L', rent: 80000, fitoutMonths: 6, rentFreeMonths: 6,
+       construction: 3500000, constructionContingency: 0.2, falseCeilings: 0, bathPerRoom: 100000 },
+  B: { ...BASE, name: 'Plan B', label: '₹40 L lean budget', rent: 80000, fitoutMonths: 6, rentFreeMonths: 6,
+       construction: 2200000, constructionContingency: 0, falseCeilings: 0, bathPerRoom: 50000,
+       furnishPerRoom: 140000, cafeFit: 250000, coworkFit: 80000, landscaping: 80000, services: 120000,
+       fitContingency: 0, legal: 100000, branding: 30000 },
+  // Plan C: ₹20 L all-in (incl. deposit and working capital), 5 rooms, no kitchen, café or co-working.
+  C: { ...BASE, name: 'Plan C', label: '₹20 L, 5 rooms, rooms only', rent: 80000, fitoutMonths: 6, rentFreeMonths: 6,
+       newRooms: 3, heritageRooms: 2, rateAdjust: -500, breakfastCost: 0,
+       construction: 550000, constructionContingency: 0, falseCeilings: 0, bathPerRoom: 40000,
+       furnishPerRoom: 120000, cafeFit: 0, coworkFit: 0, landscaping: 0, services: 50000,
+       fitContingency: 0, legal: 80000, branding: 20000, workingCapital: 260000,
+       cafeCovers: { peak: 0, shoulder: 0, low: 0, monsoon: 0 }, coworkMonthly: 0,
+       cookPay: 0, kitchenHelperPay: 0, serverPay: 0, maids: 1, staffWelfare: 4000,
+       utilities: 40000, fixedOther: 40000 },
+};
+
+function season(m) {
+  if (m === 12 || m <= 2) return 'peak';
+  if (m >= 6 && m <= 9) return 'monsoon';
+  if (m === 5) return 'low';
+  return 'shoulder';
+}
+const DAYS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+function ramp(op) { return op <= 6 ? 0.6 : op <= 12 ? 0.8 : op <= 24 ? 0.92 : 1; }
+
+function capex(p) {
+  const rooms = p.newRooms + p.heritageRooms;
+  const constr = p.construction * (1 + p.constructionOverrun);
+  const lines = [['Construction to finish the building', constr, 'build']];
+  if (p.constructionContingency) lines.push([`Construction contingency (${Math.round(p.constructionContingency * 100)}%)`, constr * p.constructionContingency, 'build']);
+  const fit = [
+    p.falseCeilings && ['False ceilings', p.falseCeilings],
+    ['Bathroom fixtures and sanitaryware', p.bathPerRoom * rooms],
+    ['Room furnishing incl. AC and linen', p.furnishPerRoom * rooms],
+    ['Café kitchen, counter, furniture', p.cafeFit],
+    ['Co-working desks, Wi-Fi, power backup', p.coworkFit],
+    ['Landscaping and garden seating', p.landscaping],
+    ['Water tank, solar heaters, inverter', p.services],
+  ].filter(Boolean);
+  fit.forEach(([l, a]) => lines.push([l, a, 'fit']));
+  if (p.fitContingency) lines.push([`Fit-out contingency (${Math.round(p.fitContingency * 100)}%)`, fit.reduce((t, [, a]) => t + a, 0) * p.fitContingency, 'fit']);
+  lines.push(['LLP, lease registration, licences, legal', p.legal, 'soft']);
+  lines.push(['Branding, website, photography', p.branding, 'soft']);
+  // budgetOverrun stresses every build and fit-out line at once
+  const items = lines.filter(([, amount]) => amount > 0).map(([label, amount, group]) => ({ label, amount: amount * (1 + p.budgetOverrun), group }));
+  const depreciable = items.reduce((t, i) => t + i.amount, 0);
+  const deposit = p.rent * p.depositMonths;
+  items.push({ label: `Security deposit, ${p.depositMonths} months (refundable)`, amount: deposit, group: 'cash' });
+  items.push({ label: 'Working capital buffer', amount: p.workingCapital, group: 'cash' });
+  return { items, depreciable, deposit, total: depreciable + deposit + p.workingCapital };
+}
+
+function run(p) {
+  const cx = capex(p);
+  const rooms = p.newRooms + p.heritageRooms;
+  const months = p.leaseYears * 12;
+  const years = Array.from({ length: p.leaseYears }, () => ({
+    roomRev: 0, nomadRev: 0, cafeRev: 0, coworkRev: 0, padelRev: 0,
+    commission: 0, varCost: 0, cafeCost: 0, rent: 0, staff: 0, utilities: 0, other: 0,
+    staffKitchen: 0, staffHousekeeping: 0, staffCaretaker: 0, staffWelfare: 0, partner: 0,
+    roomNights: 0, availNights: 0,
+  }));
+  // rateAdjust: e.g. −₹500 a night when breakfast isn't included
+  const adrNew = p.adrNew + p.rateAdjust, adrHer = p.adrHeritage + p.rateAdjust;
+  const avgAdr = (adrNew * p.newRooms + adrHer * p.heritageRooms) / rooms;
+  for (let i = 0; i < months; i++) {
+    const m = ((p.startMonth - 1 + i) % 12) + 1;
+    const ly = Math.floor(i / 12);
+    const y = years[ly];
+    const infl = Math.pow(1 + p.inflation, ly);
+    y.rent += i < p.rentFreeMonths ? 0 : p.rent * Math.pow(1 + p.rentEscalation, Math.max(0, ly - p.flatYears + 1));
+    if (i < p.fitoutMonths) continue;
+    const op = i - p.fitoutMonths + 1;
+    const r = ramp(op) * p.occScale;
+    const s = season(m), d = DAYS[m - 1];
+    const priceMult = (s === 'peak' ? 1 + p.peakPremium : s === 'shoulder' ? 1 : 1 - p.lowDiscount) * infl;
+    let nights;
+    if (s === 'monsoon') {
+      const nomadCap = Math.min(p.nomadRooms, rooms);
+      const nomads = Math.min(nomadCap, nomadCap * r);
+      const nn = (rooms - nomadCap) * d * Math.min(1, p.occMonsoonNightly * r);
+      const nightlyRev = nn * avgAdr * priceMult;
+      const nomadRev = nomads * p.nomadRate * infl;
+      y.roomRev += nightlyRev; y.nomadRev += nomadRev;
+      y.commission += nightlyRev * p.otaShare * p.otaCommission + nomadRev * p.nomadOtaShare * p.otaCommission;
+      nights = nn + nomads * d;
+    } else {
+      const occ = Math.min(1, (s === 'peak' ? p.occPeak : s === 'low' ? p.occLow : p.occShoulder) * r);
+      const nNew = p.newRooms * d * occ, nHer = p.heritageRooms * d * occ;
+      const rev = (nNew * adrNew + nHer * adrHer) * priceMult;
+      y.roomRev += rev; y.commission += rev * p.otaShare * p.otaCommission;
+      nights = nNew + nHer;
+    }
+    y.roomNights += nights; y.availNights += rooms * d;
+    y.varCost += nights * (p.guestsPerRoom * p.breakfastCost + p.roomVarCost) * infl;
+    const cafe = p.cafeCovers[s] * Math.min(1, ramp(op) + 0.1) * d * p.cafeTicket * infl;
+    y.cafeRev += cafe; y.cafeCost += cafe * p.cafeFoodCost;
+    y.coworkRev += p.coworkMonthly * ramp(op) * infl;
+    if (p.padel && ly + 1 >= p.padelStartYear) y.padelRev += p.padelGroundRent * infl;
+    const pay = Math.pow(1 + p.payRise, ly);
+    const kitchen = (p.cookPay + p.kitchenHelperPay + p.serverPay) * pay;
+    const house = p.maids * p.maidPay * pay, care = p.caretakerPay * pay;
+    const welfare = p.staffWelfare * pay + (kitchen + house + care) * p.bonusRate;
+    y.staffKitchen += kitchen; y.staffHousekeeping += house; y.staffCaretaker += care;
+    y.staffWelfare += welfare; y.partner += p.partnerSalary * pay;
+    y.staff += kitchen + house + care + welfare + p.partnerSalary * pay;
+    y.utilities += p.utilities * infl * (0.7 + 0.3 * (nights / (rooms * d)));
+    y.other += p.fixedOther * infl;
+  }
+  const dep = cx.depreciable / p.leaseYears;
+  let cum = -cx.total, payback = null;
+  const flows = [-cx.total];
+  years.forEach((y, idx) => {
+    y.revenue = y.roomRev + y.nomadRev + y.cafeRev + y.coworkRev + y.padelRev;
+    y.opex = y.commission + y.varCost + y.cafeCost + y.rent + y.staff + y.utilities + y.other;
+    y.ebitda = y.revenue - y.opex;
+    y.tax = Math.max(0, (y.ebitda - dep) * p.taxRate);
+    y.cash = y.ebitda - y.tax + (idx === p.leaseYears - 1 ? cx.deposit + p.workingCapital : 0);
+    y.occupancy = y.availNights ? y.roomNights / y.availNights : 0;
+    const prev = cum; cum += y.cash; y.cumulative = cum;
+    if (payback === null && cum >= 0) payback = idx + (y.cash > 0 ? -prev / y.cash : 1);
+    flows.push(y.cash);
+  });
+  return { capex: cx, years, payback, irr: irr(flows), endCash: cum };
+}
+
+function irr(flows) {
+  const npv = r => flows.reduce((s, f, t) => s + f / Math.pow(1 + r, t), 0);
+  let lo = -0.99, hi = 2;
+  if (npv(lo) * npv(hi) > 0) return null;
+  for (let k = 0; k < 200; k++) { const mid = (lo + hi) / 2; if (npv(lo) * npv(mid) <= 0) hi = mid; else lo = mid; }
+  return (lo + hi) / 2;
+}
+
+// Smallest value of `key` (searched in [lo, hi]) at which `test` passes; result is reported via `read`.
+function solve(p, key, lo, hi, test) {
+  if (!test(run({ ...p, [key]: hi }))) return null;
+  for (let k = 0; k < 40; k++) { const mid = (lo + hi) / 2; if (test(run({ ...p, [key]: mid }))) hi = mid; else lo = mid; }
+  return hi;
+}
+const TESTS = {
+  cash: r => r.years[3].ebitda >= 0,
+  lease: r => r.endCash >= 0,
+  five: r => r.payback !== null && r.payback <= 5,
+};
+function breakEven(p) {
+  const out = {};
+  for (const [k, t] of Object.entries(TESTS)) {
+    const s = solve(p, 'occScale', 0.2, 2.5, t);
+    out[k] = s === null ? null : run({ ...p, occScale: s }).years[3].occupancy;
+  }
+  return out;
+}
+// Highest monthly rent at which the plan still meets `test`.
+function maxRent(p, test) {
+  let lo = 0, hi = 300000;
+  if (!test(run({ ...p, rent: lo }))) return null;
+  for (let k = 0; k < 40; k++) { const mid = (lo + hi) / 2; if (test(run({ ...p, rent: mid }))) lo = mid; else hi = mid; }
+  return lo;
+}
+
+if (typeof module !== 'undefined') module.exports = { BASE, PLANS, run, capex, breakEven, maxRent, solve, TESTS };
+
+const SCEN = {
+  cons: { occScale: 0.75, adrNew: 4500, adrHeritage: 6500, cafeScale: 0.75, nomadRooms: 2 },
+  base: { occScale: 1, adrNew: 5000, adrHeritage: 7500, cafeScale: 1, nomadRooms: 3 },
+  opt:  { occScale: 1.15, adrNew: 5500, adrHeritage: 8500, cafeScale: 1.2, nomadRooms: 3 },
+};
+const K = ['A', 'B', 'C'];
+const TAG = { A: 'full fit-out', B: '₹40 L lean', C: '₹20 L rooms only' };
+const st = { ...SCEN.base, rentA: PLANS.A.rent, rentB: PLANS.B.rent, rentC: PLANS.C.rent,
+  construction: PLANS.A.construction, overrun: 0, budget: 0, budgetC: 0, tab: 'A', focus: 'all' };
+const $ = id => document.getElementById(id);
+const L = x => { const v = x / 1e5; if (Math.abs(v) >= 100) return (v < 0 ? '−' : '') + '₹' + (Math.abs(v) / 100).toFixed(2) + ' Cr'; return (v < 0 ? '−' : '') + '₹' + Math.abs(v).toFixed(1) + ' L'; };
+const Lnum = x => { const v = x / 1e5; return (v < 0 ? '−' : '') + Math.abs(v).toFixed(1); };
+const R = x => '₹' + Math.round(x).toLocaleString('en-IN');
+const pct = x => x == null ? '—' : Math.round(x * 100) + '%';
+const yrs = x => x == null ? 'Never' : x.toFixed(1) + ' yrs';
+const fmtIrr = r => r.irr === null ? 'nothing' : (r.irr * 100).toFixed(1) + '%';
+const plus = v => '+' + Math.round(v * 100) + '%';
+
+const ctls = [
+  ['occ', 'occScale', null], ['adrNew', 'adrNew', R], ['adrHer', 'adrHeritage', R], ['nomad', 'nomadRooms', v => v + ' rooms'],
+  ['cafe', 'cafeScale', v => Math.round(v * 100) + '%'], ['rentA', 'rentA', R], ['rentB', 'rentB', R], ['rentC', 'rentC', R],
+  ['constr', 'construction', v => L(v)], ['overrun', 'overrun', plus], ['budget', 'budget', plus], ['budgetC', 'budgetC', plus],
+];
+
+function plan(k) {
+  const p = PLANS[k], c = p.cafeCovers, s = st.cafeScale;
+  const q = { ...p, occScale: st.occScale, adrNew: st.adrNew, adrHeritage: st.adrHeritage, nomadRooms: st.nomadRooms,
+    cafeCovers: { peak: c.peak * s, shoulder: c.shoulder * s, low: c.low * s, monsoon: c.monsoon * s }, rent: st['rent' + k] };
+  if (k === 'A') { q.construction = st.construction; q.constructionOverrun = st.overrun; }
+  if (k === 'B') q.budgetOverrun = st.budget;
+  if (k === 'C') q.budgetOverrun = st.budgetC;
+  return q;
+}
+const rooms = p => p.newRooms + p.heritageRooms;
+
+function render() {
+  const P = {}, Rr = {}, B = {};
+  K.forEach(k => { P[k] = plan(k); Rr[k] = run(P[k]); B[k] = breakEven(P[k]); });
+  const V = st.focus === 'all' ? K : [st.focus];
+  ctls.forEach(([id, key, fmt]) => { $('o-' + id).textContent = fmt ? fmt(st[key]) : pct(Rr[V[0]].years[3].occupancy); });
+  document.querySelectorAll('aside .ctl-group[data-plan]').forEach(g => { g.hidden = !V.includes(g.dataset.plan); });
+  document.querySelectorAll('.focus button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.focus === st.focus)));
+  $('plTabs').hidden = V.length === 1;
+
+  const col = k => { const p = P[k], r = Rr[k], b = B[k]; return `<div class="col"><h3><i class="dot ${k.toLowerCase()}"></i>${p.name}: ${TAG[k]}</h3>
+    <dl>
+      <dt>Rooms</dt><dd>${rooms(p)}${p.cafeFit ? ' + café' : ''}</dd>
+      <dt>Total investment</dt><dd class="big">${L(r.capex.total)}</dd>
+      <dt>Per partner (3)</dt><dd>${L(r.capex.total / 3)}</dd>
+      <dt>Build + fit-out spend</dt><dd>${L(r.capex.depreciable)}</dd>
+      <dt>Payback from signing</dt><dd class="big">${r.payback === null ? '<span class="neg">Never</span>' : yrs(r.payback)}</dd>
+      <dt>Return a year (IRR)</dt><dd>${r.irr === null ? '—' : (r.irr * 100).toFixed(1) + '%'}</dd>
+      <dt>Year-4 profit before tax</dt><dd>${L(r.years[3].ebitda)}</dd>
+      <dt>Net cash at lease end</dt><dd>${r.endCash < 0 ? '<span class="neg">' + L(r.endCash) + '</span>' : L(r.endCash)}</dd>
+      <dt>Break-even occupancy</dt><dd>${pct(b.cash)}</dd>
+    </dl></div>`; };
+  $('vs').innerHTML = V.map(col).join('');
+  $('vs').dataset.n = V.length;
+
+  const pb = k => Rr[k].payback ?? 99;
+  const best = V.reduce((a, k) => pb(k) < pb(a) ? k : a, V[0]);
+  const tone = pb(best) <= 5 ? 'var(--good)' : pb(best) <= 7 ? 'var(--warn)' : 'var(--bad)';
+  const v = $('verdict');
+  v.style.borderLeftColor = tone;
+  v.querySelector('strong').style.color = tone;
+  v.querySelector('strong').textContent = V.length === 1
+    ? (pb(best) >= 99 ? `Plan ${best} doesn't pay back on these numbers` : `Plan ${best} pays back in ${yrs(Rr[best].payback)}`)
+    : (pb(best) >= 99 ? 'No plan pays back on these numbers' : `Plan ${best} pays back fastest at these settings`);
+  // Plan C year-1 cash gap: losses beyond its working-capital buffer
+  const c1 = Rr.C.years[0].ebitda, cGap = Math.max(0, -c1 - P.C.workingCapital);
+  const b25 = run({ ...P.B, budgetOverrun: 0.25 }), b50 = run({ ...P.B, budgetOverrun: 0.5 });
+  const a50 = run({ ...P.A, constructionOverrun: 0.5 }), c60 = run({ ...P.C, rent: 60000 });
+  const one = k => { const r = Rr[k], b = B[k]; return `You put in ${L(r.capex.total)} (${L(r.capex.total / 3)} each) and get it back in ${yrs(r.payback)}, earning ${fmtIrr(r)} a year. ` +
+    `In a normal year (year 4) the business takes ${L(r.years[3].revenue)} and keeps ${L(r.years[3].ebitda)} before tax. ` +
+    `It covers its costs at ${pct(b.cash)} occupancy (${(b.cash * rooms(P[k])).toFixed(1)} of ${rooms(P[k])} rooms a night) and recovers the investment within the lease at ${pct(b.lease)}. South Goa listings average 32–38%.`; };
+  const FOCUS_NOTE = {
+    A: ` The full fit-out earns the same as Plan B in the model, so the extra ${L(Rr.A.capex.total - Rr.B.capex.total)} only buys a better finish.`,
+    B: ` The main risk is the build: ₹22 L of construction against Dulce's ₹35 L estimate.`,
+    C: ` Dropping the café and a room cuts revenue roughly in half while rent and the partner's salary stay the same.` + (cGap > 0 ? ` Year 1 loses ${L(-c1)}, ${L(cGap)} more than the cash buffer.` : ''),
+  };
+  $('verdictText').textContent = V.length === 1 ? one(V[0]) + FOCUS_NOTE[V[0]] :
+    `Plan A: ${L(Rr.A.capex.total)} in, money back in ${yrs(Rr.A.payback)}, ${fmtIrr(Rr.A)} a year. ` +
+    `Plan B: ${L(Rr.B.capex.total)} in, back in ${yrs(Rr.B.payback)}, ${fmtIrr(Rr.B)} a year. ` +
+    `Plan C: ${L(Rr.C.capex.total)} in, back in ${yrs(Rr.C.payback)}, ${fmtIrr(Rr.C)} a year. ` +
+    `Plan C is cheapest, but it drops the café and a room while rent and the partner's salary stay the same. It has to fill ${pct(B.C.cash)} of its rooms just to cover costs, against ${pct(B.B.cash)} for Plan B, and South Goa listings average 32–38%. ` +
+    (cGap > 0 ? `Its year-1 loss of ${L(-c1)} is ${L(cGap)} more than its cash buffer, so ₹20 L alone won't carry it through the first year.` : '');
+
+  const CALL = {
+    all: [
+      ['Cash per partner', K.map(k => L(Rr[k].capex.total / 3).replace('₹', '')).join(' / '), 'Plans A / B / C, ₹ lakh each for 3 partners.'],
+      ['Plan B if the ₹40 L runs 25% over', yrs(b25.payback), `Cash needed rises to ${L(b25.capex.total)}. Its construction is ₹22 L against Dulce's ₹35 L.`],
+      ['Plan C first-year cash gap', cGap > 0 ? L(cGap) : 'None', `Year-1 loss ${L(-Math.min(0, c1))} against a ₹${(P.C.workingCapital / 1e5).toFixed(1)} L buffer. Keep this much extra ready.`],
+    ],
+    A: [
+      ['Per partner', L(Rr.A.capex.total / 3), 'Cash each of 3 partners puts in.'],
+      ['Extra cash over Plan B', L(Rr.A.capex.total - Rr.B.capex.total), 'Same rooms, café and revenue in the model; the difference is finish quality.'],
+      ["If Dulce's estimate runs 50% over", yrs(a50.payback), `Total cash rises to ${L(a50.capex.total)}.`],
+    ],
+    B: [
+      ['Per partner', L(Rr.B.capex.total / 3), 'Cash each of 3 partners puts in.'],
+      ['If the ₹40 L runs over', yrs(b25.payback) + ' / ' + yrs(b50.payback), `Payback at +25% / +50%. Cash rises to ${L(b25.capex.total)} / ${L(b50.capex.total)}.`],
+      ["Construction vs Dulce's estimate", L(P.B.construction * (1 + st.budget)) + ' vs ' + L(PLANS.A.construction), 'Get the lean scope priced before you commit.'],
+    ],
+    C: [
+      ['Per partner', L(Rr.C.capex.total / 3), 'Cash each of 3 partners puts in, before any year-1 top-up.'],
+      ['First-year cash gap', cGap > 0 ? L(cGap) : 'None', `Year-1 loss ${L(-Math.min(0, c1))} against a ₹${(P.C.workingCapital / 1e5).toFixed(1)} L buffer.`],
+      ['At ₹60k rent', yrs(c60.payback), `Return rises to ${fmtIrr(c60)} a year. Rent matters more here than in any other plan.`],
+    ],
+  };
+  $('callouts').innerHTML = CALL[st.focus].map(([t, val, s]) => `<div class="callout"><span class="eyebrow">${t}</span><span class="v">${val}</span><span class="src">${s}</span></div>`).join('');
+
+  const tab = V.length === 1 ? V[0] : st.tab;
+  drawChart(Rr, V);
+  drawNeeds(P, Rr, B, V);
+  drawPL(Rr[tab], P[tab]);
+  drawCapex(Rr, V);
+}
+
+function niceStep(raw) { const p = Math.pow(10, Math.floor(Math.log10(raw))); const m = raw / p; return (m <= 1 ? 1 : m <= 2 ? 2 : m <= 5 ? 5 : 10) * p; }
+function drawChart(Rr, V) {
+  const W = 640, H = 260, padL = 54, padR = 64, padT = 14, padB = 30;
+  const series = V.map(k => [-Rr[k].capex.total, ...Rr[k].years.map(y => y.cumulative)]);
+  const all = series.flat();
+  let max = Math.max(0, ...all), min = Math.min(0, ...all);
+  const step = niceStep((max - min) / 5); max = Math.ceil(max / step) * step; min = Math.floor(min / step) * step;
+  const y = v => padT + (max - v) / (max - min) * (H - padT - padB);
+  const n = series[0].length, x = i => padL + i * (W - padL - padR) / (n - 1);
+  let s = '';
+  for (let v = min; v <= max + 1; v += step) {
+    s += `<line x1="${padL}" x2="${W - padR}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" ${v === 0 ? 'style="stroke:var(--muted)" stroke-width="1.5"' : ''}/>`;
+    s += `<text x="${padL - 6}" y="${y(v) + 4}" text-anchor="end">${Lnum(v)}</text>`;
+  }
+  for (let i = 0; i < n; i++) s += `<text x="${x(i)}" y="${H - 10}" text-anchor="middle">${i === 0 ? 'Start' : 'Y' + i}</text>`;
+  series.forEach((pts, k) => {
+    const c = `var(--plan${V[k]})`;
+    s += `<polyline fill="none" stroke="${c}" stroke-width="2.25" points="${pts.map((v, i) => x(i) + ',' + y(v)).join(' ')}"/>`;
+    pts.forEach((v, i) => { s += `<circle cx="${x(i)}" cy="${y(v)}" r="${i === n - 1 ? 4 : 2.5}" fill="${c}"/>`; });
+  });
+  // end labels, spread apart so they never overlap
+  const ends = series.map((pts, k) => ({ k, y: y(pts[n - 1]), v: pts[n - 1] })).sort((a, b) => a.y - b.y);
+  for (let i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 14) ends[i].y = ends[i - 1].y + 14;
+  ends.forEach(e => { s += `<text x="${x(n - 1) + 8}" y="${e.y + 4}" style="fill:var(--plan${V[e.k]})">${V[e.k]} ${Lnum(e.v)}</text>`; });
+  $('chart').innerHTML = s;
+}
+
+function drawNeeds(P, Rr, B, V) {
+  const scale = v => Math.min(100, v / 0.8 * 100);
+  const now = k => Rr[k].years[3].occupancy;
+  const bar = (need, k) => need == null ? '<span class="neg">not reachable</span>' :
+    `<div class="bar" style="min-width:110px"><b style="left:${scale(0.32)}%;width:${scale(0.38) - scale(0.32)}%"></b><i style="left:${scale(need)}%;background:var(--muted)"></i><i style="left:${scale(now(k))}%;background:var(--plan${k});width:4px"></i></div>`;
+  const cell = (need, k) => `<td class="num">${pct(need)} <span class="pill ${need != null && now(k) >= need ? 'good' : 'bad'}">${need != null && now(k) >= need ? 'met' : 'not met'}</span></td><td>${bar(need, k)}</td>`;
+  const row = (label, key) => `<tr><td style="white-space:normal">${label}</td>${V.map(k => cell(B[k][key], k)).join('')}</tr>`;
+  const perNight = (key) => `<tr><td style="white-space:normal">Rooms filled per night (${key === 'cash' ? 'break even' : 'recover investment in the lease'})</td>${V.map(k => `<td class="num">${B[k][key] == null ? '—' : (B[k][key] * rooms(P[k])).toFixed(1) + ' of ' + rooms(P[k])}</td><td></td>`).join('')}</tr>`;
+  $('needs').innerHTML = `<thead><tr><th>Outcome</th>${V.map(k => `<th>Plan ${k}</th><th></th>`).join('')}</tr></thead><tbody>
+    ${row('Covers running costs (year-4 profit ≥ 0)', 'cash')}
+    ${row('Gets the investment back within 9 years', 'lease')}
+    ${row('Gets the investment back within 5 years', 'five')}
+    ${perNight('cash')}${perNight('lease')}
+  </tbody>`;
+}
+
+function drawPL(r, p) {
+  const ys = r.years;
+  const row = (label, f, cls = '') => `<tr class="${cls}"><td>${label}</td>${ys.map(y => { const v = f(y); return `<td class="num ${v < 0 ? 'neg' : ''}">${Lnum(v)}</td>`; }).join('')}</tr>`;
+  $('pl').innerHTML = `<thead><tr><th>${p.name}, ₹ lakh</th>${ys.map((_, i) => `<th>Y${i + 1}</th>`).join('')}</tr></thead><tbody>
+    <tr><td>Occupancy</td>${ys.map(y => `<td class="num">${pct(y.occupancy)}</td>`).join('')}</tr>
+    ${row('Rooms, nightly', y => y.roomRev, 'sub')}${row('Monsoon monthly stays', y => y.nomadRev, 'sub')}
+    ${row('Café', y => y.cafeRev, 'sub')}${row('Co-working', y => y.coworkRev, 'sub')}
+    ${row('Revenue', y => y.revenue, 'total')}
+    ${row('Booking-site commission', y => -y.commission, 'sub')}${row('Breakfast, laundry, amenities', y => -y.varCost, 'sub')}
+    ${row('Café food cost', y => -y.cafeCost, 'sub')}${row('Rent', y => -y.rent, 'sub')}
+    ${row('Kitchen staff', y => -y.staffKitchen, 'sub')}${row('Housekeeping', y => -y.staffHousekeeping, 'sub')}${row('Caretaker', y => -y.staffCaretaker, 'sub')}
+    ${row('Staff food and bonus', y => -y.staffWelfare, 'sub')}${row('On-site partner salary', y => -y.partner, 'sub')}${row('Power, water, gas, internet', y => -y.utilities, 'sub')}
+    ${row('Upkeep, marketing, software, insurance', y => -y.other, 'sub')}
+    ${row('Operating profit (EBITDA)', y => y.ebitda, 'total')}${row('Tax', y => -y.tax, 'sub')}
+    ${row('Cash to partners', y => y.cash, 'total')}${row('Cumulative, after investment', y => y.cumulative)}
+  </tbody>`;
+}
+
+function drawCapex(Rr, V) {
+  const cx = V.map(k => Rr[k].capex);
+  const labels = [...new Set(cx.flatMap(c => c.items.map(i => i.label)))];
+  const amt = (c, l) => { const i = c.items.find(x => x.label === l); return i ? Lnum(i.amount) : '–'; };
+  $('capex').innerHTML = `<thead><tr><th>Item, ₹ lakh</th>${V.map(k => `<th>Plan ${k}</th>`).join('')}</tr></thead><tbody>
+    ${labels.map(l => `<tr><td style="white-space:normal">${l}</td>${cx.map(c => `<td class="num">${amt(c, l)}</td>`).join('')}</tr>`).join('')}
+    <tr class="total"><td>Total</td>${cx.map(c => `<td class="num">${Lnum(c.total)}</td>`).join('')}</tr>
+    <tr><td>Per partner (3)</td>${cx.map(c => `<td class="num">${Lnum(c.total / 3)}</td>`).join('')}</tr></tbody>`;
+}
+
+function sync() { ctls.forEach(([id, key]) => { $(id).value = st[key]; }); }
+document.querySelectorAll('.presets button').forEach(b => b.addEventListener('click', () => {
+  Object.assign(st, SCEN[b.dataset.preset]);
+  document.querySelectorAll('.presets button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+  sync(); render();
+}));
+ctls.forEach(([id, key]) => $(id).addEventListener('input', e => {
+  st[key] = Number(e.target.value);
+  if (['occScale', 'adrNew', 'adrHeritage', 'nomadRooms', 'cafeScale'].includes(key))
+    document.querySelectorAll('.presets button').forEach(x => x.setAttribute('aria-pressed', 'false'));
+  render();
+}));
+document.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => {
+  st.tab = b.dataset.plan;
+  document.querySelectorAll('.tabs button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+  render();
+}));
+document.querySelectorAll('.focus button').forEach(b => b.addEventListener('click', () => {
+  st.focus = b.dataset.focus;
+  try { localStorage.setItem('velsao-focus', st.focus); } catch (e) {}
+  render();
+}));
+// Open on #plan-a / #plan-b / #plan-c when linked, else the last plan this viewer chose
+{
+  const h = (location.hash || '').toLowerCase().match(/^#plan-([abc])$/);
+  let saved = null;
+  try { saved = localStorage.getItem('velsao-focus'); } catch (e) {}
+  st.focus = h ? h[1].toUpperCase() : (['all', 'A', 'B', 'C'].includes(saved) ? saved : 'all');
+}
+sync(); render();
+</script>
