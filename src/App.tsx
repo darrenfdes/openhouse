@@ -15,13 +15,14 @@ const NAV: { route: Route; label: string; icon: () => React.ReactElement }[] = [
   { route: 'import', label: 'Import and share', icon: IconImport },
 ];
 
-/** A plan arriving in a share link joins the saved plans and is selected; the link is then cleared. */
+// A share link is read once, at load, outside React: StrictMode runs state initialisers twice.
+const shared = planFromHash(window.location.hash);
+if (shared.plan || shared.errors.length) window.history.replaceState(null, '', window.location.pathname);
+if (shared.errors.length) window.setTimeout(() => window.alert(`This share link could not be opened.\n\n${shared.errors.join('\n')}`));
+
+/** A plan arriving in a share link joins the saved plans and is selected. */
 function withSharedPlan(state: State): State {
-  const { plan, errors } = planFromHash(window.location.hash);
-  if (errors.length) window.setTimeout(() => window.alert(`This share link could not be opened.\n\n${errors.join('\n')}`));
-  if (!plan) return state;
-  window.history.replaceState(null, '', window.location.pathname);
-  return reducer(state, { type: 'add', plan });
+  return shared.plan ? reducer(state, { type: 'add', plan: shared.plan }) : state;
 }
 
 const THEME_KEY = 'openhouse:theme';

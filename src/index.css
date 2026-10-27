@@ -52,24 +52,24 @@
   :root:not([data-theme='light']) {
     --ground: #000000; --surface: #111111; --raised: #191919; --active: #222222;
     --border: #262626; --rule: #1c1c1c; --control: #444444;
-    --text: #f5f4f0; --muted: #b4b2ab; --faint: #9a988f;
+    --text: #f2f2f2; --muted: #b4b4b0; --faint: #9a9a96;
     --accent: #e0775a; --accent-band: rgba(224, 119, 90, 0.16);
-    --primary: #f5f4f0; --primary-ink: #000000; --secondary: #262626;
+    --primary: #f2f2f2; --primary-ink: #000000; --secondary: #262626;
     --positive: #5fbf8d; --negative: #f07a6f;
     --pill-warning-bg: #2b2414; --pill-warning-ink: #e5b35b;
-    --grid: #2b2b2b; --chart-2: #f5f4f0; --chart-3: #5fbf8d; --chart-4: #9a988f;
+    --grid: #2b2b2b; --chart-2: #f2f2f2; --chart-3: #5fbf8d; --chart-4: #9a988f;
     color-scheme: dark;
   }
 }
 :root[data-theme='dark'] {
   --ground: #000000; --surface: #111111; --raised: #191919; --active: #222222;
   --border: #262626; --rule: #1c1c1c; --control: #444444;
-  --text: #f5f4f0; --muted: #b4b2ab; --faint: #9a988f;
+  --text: #f2f2f2; --muted: #b4b4b0; --faint: #9a9a96;
   --accent: #e0775a; --accent-band: rgba(224, 119, 90, 0.16);
-  --primary: #f5f4f0; --primary-ink: #000000; --secondary: #262626;
+  --primary: #f2f2f2; --primary-ink: #000000; --secondary: #262626;
   --positive: #5fbf8d; --negative: #f07a6f;
   --pill-warning-bg: #2b2414; --pill-warning-ink: #e5b35b;
-  --grid: #2b2b2b; --chart-2: #f5f4f0; --chart-3: #5fbf8d; --chart-4: #9a988f;
+  --grid: #2b2b2b; --chart-2: #f2f2f2; --chart-3: #5fbf8d; --chart-4: #9a988f;
   color-scheme: dark;
 }
 
@@ -143,10 +143,9 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 textarea.input { height: auto; padding: 10px; line-height: 1.45; }
 .switch { position: relative; width: 36px; height: 20px; flex: none; appearance: none; margin: 0; border-radius: 999px; background: var(--control); cursor: pointer; transition: background-color 150ms; }
-.switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: transform 200ms var(--ease-out); }
+.switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--surface); transition: transform 200ms var(--ease-out); }
 .switch:checked { background: var(--primary); }
 .switch:checked::after { transform: translateX(16px); }
-:root[data-theme='dark'] .switch::after { background: #111; }
 input[type='range'] { width: 100%; accent-color: var(--text); height: 24px; margin: 0; }
 
 /* ---------- panels ---------- */
@@ -196,6 +195,9 @@ table.data { width: 100%; border-collapse: collapse; font-variant-numeric: tabul
 .data th:first-child, .data td:first-child { padding-left: 0; }
 .data th:last-child, .data td:last-child { padding-right: 0; }
 .data .num { text-align: right; }
+.scroll-x .data td:first-child, .scroll-x .data th:first-child { position: sticky; left: 0; background: var(--surface); }
+/* Recharts measures text in an off-screen span; keep it out of the page entirely. */
+#recharts_measurement_span { visibility: hidden; }
 .data tr.best td { font-weight: 700; }
 .scroll-x { overflow-x: auto; }
 .scroll-y { max-height: 420px; overflow: auto; }
@@ -252,9 +254,11 @@ table.data { width: 100%; border-collapse: collapse; font-variant-numeric: tabul
   .topbar { display: flex; position: sticky; top: 0; z-index: 40; align-items: center; justify-content: space-between; gap: 8px; height: 48px; padding: 0 16px; background: var(--ground); border-bottom: 1px solid var(--border); }
   .topbar-title { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .canvas { padding: 20px; }
-  .board { grid-template-columns: minmax(0, 1fr); }
-  .board > .results { order: -1; }
-  .controls { position: static; max-height: none; overflow: visible; }
+  .board { display: flex; flex-direction: column; min-width: 0; }
+  .board > .results, .board > .controls { display: contents; }
+  .board .card, .board .kpis { width: 100%; min-width: 0; }
+  .board .o-1 { order: 1; } .board .o-2 { order: 2; } .board .o-3 { order: 3; } .board .o-4 { order: 4; }
+  .board .o-5 { order: 5; } .board .o-6 { order: 6; } .board .o-7 { order: 7; }
   .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .kpi { border-left: 0; border-top: 1px solid var(--border); }
   .kpi:nth-child(-n + 2) { border-top: 0; }

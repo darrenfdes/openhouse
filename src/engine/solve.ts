@@ -6,7 +6,7 @@ import { runPlan, type Result } from './run';
 export type Test = (r: Result) => boolean;
 
 /** The year whose occupancy break-even is read from: year 4, or the last year of a shorter lease. */
-const readYear = (r: Result) => r.years[Math.min(3, r.years.length - 1)];
+export const readYear = (r: Result) => r.years[Math.min(3, r.years.length - 1)];
 
 export const TESTS = {
   /** Year-4 EBITDA is not negative: the business covers its running costs. */

@@ -9,6 +9,10 @@
 - **Fit-out**: money spent to make the property usable. Written off if the partners walk away.
 - **Walk-away year**: optional year the partners leave early: rent stops, deposit returns, fit-out is written off, subleases end.
 - **J-curve**: cumulative cash by month. Dips with spend and early losses, then climbs.
-- **Payback**: the month cumulative cash turns positive for good.
+- **Payback**: years until cumulative cash first turns positive, interpolated within the year (as the legacy model computes it).
 - **Band**: shaded area between the cautious and hopeful case around the base J-curve.
 - **Cautious / hopeful case**: occupancy -20% and rate -10%, versus occupancy +15%.
+- **Fit-out months**: months of building work at the start of the lease, before the first guest: no income and no running costs.
+- **Paid by**: who pays a running-cost line, the partners or the operator (StayVista pays housekeeping and guest costs in its cut).
+- **Break-even occupancy**: the year-4 room occupancy at which net cash at the end of the lease is zero.
+- **Cash to put in**: build, fit-out, legal and branding, the rent deposit and working capital: everything paid before opening.

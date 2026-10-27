@@ -24,6 +24,16 @@ export function years(y: number | null): string {
   return y === null ? 'Never' : `${y.toFixed(1)} years`;
 }
 
+/** Lease month 1-based to words: month 12 is "Year 1, month 12"; 0 is the day the cash goes in. */
+export function monthLabel(m: number): string {
+  return m === 0 ? 'Before opening' : `Year ${Math.ceil(m / 12)}, month ${((m - 1) % 12) + 1}`;
+}
+
+/** A chart axis tick: "50 L". */
+export function lakhTick(rupees: number): string {
+  return `${Math.round(rupees / LAKH)} L`;
+}
+
 export function signedLakh(rupees: number): string {
   return rupees > 0 ? `+${lakh(rupees)}` : lakh(rupees);
 }

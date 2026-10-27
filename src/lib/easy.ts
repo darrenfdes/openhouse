@@ -27,7 +27,10 @@ export function setLeaseYears(p: Plan, n: number): Plan {
 const usesStayVista = (p: Plan) => p.operator.kind !== 'self';
 
 /** Peak-season occupancy; the other seasons keep their ratio to it. */
-export const peakOccupancy = (p: Plan) => (p.operator.kind === 'stayvista' ? p.operator.stayvista.occupancy.peak : p.stays.occupancy.peak);
+export const peakOccupancy = (p: Plan) => (stayVistaInPeak(p) ? p.operator.stayvista.occupancy.peak : p.stays.occupancy.peak);
+
+/** Whether StayVista runs the peak months, so its occupancy is the one the model uses there. */
+const stayVistaInPeak = (p: Plan) => p.operator.kind === 'stayvista' || (p.operator.kind === 'mixed' && p.operator.stayvista.seasons.includes('peak'));
 
 export function setPeakOccupancy(p: Plan, v: number): Plan {
   const scale = (o: Record<Season, number>) => {

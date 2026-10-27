@@ -5,12 +5,12 @@ import { SelectField, Slider, SwitchRow } from '../components/fields';
 import { JCurve } from '../components/JCurve';
 import { Term } from '../components/Term';
 import { YearBars } from '../components/YearBars';
-import { breakEven, earningsBySection, runBand, sectionWarnings } from '../engine';
+import { breakEven, earningsBySection, readYear, runBand, sectionWarnings, type Band } from '../engine';
 import {
   finding, firstRent, headlineRate, peakOccupancy, setHeadlineRate, setLeaseYears, setPartners, setPeakOccupancy, setRent,
 } from '../lib/easy';
 import { setIn } from '../lib/edit';
-import { lakh, pct, rupees, years } from '../lib/money';
+import { lakh, monthLabel, pct, rupees, years } from '../lib/money';
 import { navigate } from '../lib/route';
 import { DEFAULT_SUBLEASE, SIZES } from '../schema/defaults';
 import type { OperatorKind, Plan } from '../schema/plan';
@@ -49,10 +49,7 @@ export function Dashboard() {
         <div className="results stack">
           <Kpis band={band} breakEvenOcc={be.lease} partners={plan.partners.count} />
           <CashCard band={band} />
-          <div className="pair">
-            <SectionsCard plan={plan} />
-            <EarningsCard plan={plan} band={band} />
-          </div>
+          <SectionsCard plan={plan} band={band} />
           <YearsCard band={band} />
           <BuildCard band={band} />
         </div>
@@ -86,7 +83,7 @@ function CardsPanel({ plan, set }: { plan: Plan; set: (p: Plan) => void }) {
     set({ ...plan, subleases: [...plan.subleases, s] });
   };
   return (
-    <section className="card" aria-labelledby="cards-h">
+    <section className="card o-3" aria-labelledby="cards-h">
       <div className="card-head">
         <h2 id="cards-h"><Term k="card">Cards</Term></h2>
         <span className="card-note">On or off</span>
@@ -120,7 +117,7 @@ function KeyNumbers({ plan, set }: { plan: Plan; set: (p: Plan) => void }) {
   const sv = plan.operator.kind === 'stayvista';
   const firstSub = plan.subleases[0];
   return (
-    <section className="card" aria-labelledby="keys-h">
+    <section className="card o-4" aria-labelledby="keys-h">
       <div className="card-head">
         <h2 id="keys-h">Key numbers</h2>
         <button type="button" className="btn ghost" onClick={() => navigate('details')}>All settings</button>
@@ -134,9 +131,10 @@ function KeyNumbers({ plan, set }: { plan: Plan; set: (p: Plan) => void }) {
         <Slider key={r.id} label={r.name} value={r.count} display={`${r.count}`} min={0} max={8} step={1} onChange={(v) => set(setIn(plan, ['rooms', i, 'count'], v))} />
       ))}
       <Slider label={<Term k="fitout">Construction budget</Term>} value={plan.build.construction} display={lakh(plan.build.construction)} min={0} max={10000000} step={100000} onChange={(v) => set(setIn(plan, ['build', 'construction'], v))} />
-      {plan.operator.kind === 'self' ? (
+      {plan.operator.kind !== 'stayvista' && (
         <Slider label={<Term k="bookingFee">Booking-site fee</Term>} value={plan.operator.bookingFee} display={pct(plan.operator.bookingFee)} min={0} max={0.3} step={0.005} onChange={(v) => set(setIn(plan, ['operator', 'bookingFee'], v))} />
-      ) : (
+      )}
+      {plan.operator.kind !== 'self' && (
         <Slider label={<Term k="commission">StayVista commission</Term>} value={plan.operator.stayvista.commission} display={pct(plan.operator.stayvista.commission)} min={0.2} max={0.35} step={0.005} onChange={(v) => set(setIn(plan, ['operator', 'stayvista', 'commission'], v))} />
       )}
       {firstSub && (
@@ -147,11 +145,11 @@ function KeyNumbers({ plan, set }: { plan: Plan; set: (p: Plan) => void }) {
   );
 }
 
-function Kpis({ band, breakEvenOcc, partners }: { band: ReturnType<typeof runBand>; breakEvenOcc: number | null; partners: number }) {
+function Kpis({ band, breakEvenOcc, partners }: { band: Band; breakEvenOcc: number | null; partners: number }) {
   const r = band.base;
   const even = r.perPartner.every((v) => Math.abs(v - r.perPartner[0]) < 1);
   return (
-    <section className="kpis" aria-label="Key results">
+    <section className="kpis o-1" aria-label="Key results">
       <div className="kpi">
         <div className="kpi-label"><Term k="payback">Payback</Term></div>
         <div className="kpi-value lead">{years(r.payback)}</div>
@@ -175,13 +173,13 @@ function Kpis({ band, breakEvenOcc, partners }: { band: ReturnType<typeof runBan
       <div className="kpi">
         <div className="kpi-label"><Term k="breakEven">Break-even</Term></div>
         <div className="kpi-value">{breakEvenOcc === null ? '—' : pct(breakEvenOcc, 0)}</div>
-        <div className="kpi-sub">occupancy; {pct(r.years[Math.min(3, r.years.length - 1)].occupancy, 0)} expected</div>
+        <div className="kpi-sub">occupancy; {pct(readYear(r).occupancy, 0)} expected</div>
       </div>
     </section>
   );
 }
 
-function CashCard({ band }: { band: ReturnType<typeof runBand> }) {
+function CashCard({ band }: { band: Band }) {
   const [tab, setTab] = useState<'cum' | 'year'>('cum');
   const cases = [
     { name: 'Cautious', k: 'cautious' as const, r: band.cautious },
@@ -189,7 +187,7 @@ function CashCard({ band }: { band: ReturnType<typeof runBand> }) {
     { name: 'Hopeful', k: 'hopeful' as const, r: band.hopeful },
   ];
   return (
-    <section className="card" aria-labelledby="cash-h">
+    <section className="card o-2" aria-labelledby="cash-h">
       <div className="card-head">
         <h2 id="cash-h"><Term k="jcurve">Cash over the lease</Term></h2>
         <span className="card-note">After tax, in rupees of the day</span>
@@ -225,58 +223,53 @@ function CashCard({ band }: { band: ReturnType<typeof runBand> }) {
   );
 }
 
-function SectionsCard({ plan }: { plan: Plan }) {
+/** The block diagram with each section's earnings beside it: one card, so the two never end apart. */
+function SectionsCard({ plan, band }: { plan: Plan; band: Band }) {
   const warnings = sectionWarnings(plan);
-  return (
-    <section className="card" aria-labelledby="sections-h">
-      <div className="card-head">
-        <h2 id="sections-h"><Term k="section">Sections</Term></h2>
-        <span className="card-note num">{Math.round(plan.sections.reduce((t, s) => t + s.areaM2, 0)).toLocaleString('en-IN')} m²</span>
-      </div>
-      <Blocks plan={plan} onPick={(sid) => navigate('details', `#section-${sid}`)} />
-      {warnings.map((w) => (
-        <p key={w} className="notice" style={{ margin: '10px 0 0' }}>{w} This is a warning only: check the sizes.</p>
-      ))}
-    </section>
-  );
-}
-
-function EarningsCard({ plan, band }: { plan: Plan; band: ReturnType<typeof runBand> }) {
   const e = earningsBySection(plan, band.base);
-  const yi = Math.min(3, band.base.years.length - 1);
+  const yi = band.base.years.indexOf(readYear(band.base));
   return (
-    <section className="card" aria-labelledby="earn-h">
+    <section className="card o-5" aria-labelledby="sections-h">
       <div className="card-head">
-        <h2 id="earn-h"><Term k="earningsBySection">Earnings by section</Term></h2>
-        <span className="card-note">Year {yi + 1}, before tax</span>
+        <h2 id="sections-h"><Term k="section">Sections</Term> and <Term k="earningsBySection">what each earns</Term></h2>
+        <span className="card-note num">{Math.round(plan.sections.reduce((t, s) => t + s.areaM2, 0)).toLocaleString('en-IN')} m², year {yi + 1} before tax</span>
       </div>
-      <table className="data">
-        <thead>
-          <tr>
-            <th>Section</th>
-            <th className="num">Profit</th>
-            <th className="num">Per m²</th>
-          </tr>
-        </thead>
-        <tbody>
-          {e.map((s) => (
-            <tr key={s.id}>
-              <td>{s.name}</td>
-              <td className={`num ${s.years[yi] < 0 ? 'neg' : ''}`}>{lakh(s.years[yi])}</td>
-              <td className="num">{rupees(s.perM2[yi])}</td>
-            </tr>
+      <div className="pair">
+        <div>
+          <Blocks plan={plan} onPick={(sid) => navigate('details', `#section-${sid}`)} />
+          {warnings.map((w) => (
+            <p key={w} className="notice" style={{ margin: '10px 0 0' }}>{w} This is a warning only: check the sizes.</p>
           ))}
-        </tbody>
-      </table>
+        </div>
+        <table className="data">
+          <thead>
+            <tr>
+              <th>Section</th>
+              <th className="num">Profit</th>
+              <th className="num">Per m²</th>
+            </tr>
+          </thead>
+          <tbody>
+            {e.map((s) => (
+              <tr key={s.id}>
+                <td style={{ whiteSpace: 'normal' }}>{s.name}</td>
+                <td className={`num ${s.years[yi] < 0 ? 'neg' : ''}`}>{lakh(s.years[yi])}</td>
+                <td className="num">{rupees(s.perM2[yi])}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p className="card-note" style={{ margin: '12px 0 0' }}>Rent, the caretaker, utilities and other shared costs are split by area, so open land carries a large share of them.</p>
     </section>
   );
 }
 
-function YearsCard({ band }: { band: ReturnType<typeof runBand> }) {
+function YearsCard({ band }: { band: Band }) {
   const [monthly, setMonthly] = useState(false);
   const r = band.base;
   return (
-    <section className="card" aria-labelledby="years-h">
+    <section className="card o-6" aria-labelledby="years-h">
       <div className="card-head">
         <h2 id="years-h">{monthly ? 'Month by month' : 'Year by year'}</h2>
         <button type="button" className="btn ghost" onClick={() => setMonthly((m) => !m)}>{monthly ? 'Show years' : 'Show months'}</button>
@@ -290,7 +283,7 @@ function YearsCard({ band }: { band: ReturnType<typeof runBand> }) {
             <tbody>
               {r.months.slice(1).map((m) => (
                 <tr key={m.month}>
-                  <td>Year {Math.ceil(m.month / 12)}, month {((m.month - 1) % 12) + 1}</td>
+                  <td>{monthLabel(m.month)}</td>
                   <td className={`num ${m.cash < 0 ? 'neg' : ''}`}>{lakh(m.cash, 2)}</td>
                   <td className="num">{lakh(m.cumulative)}</td>
                 </tr>
@@ -332,10 +325,10 @@ function YearsCard({ band }: { band: ReturnType<typeof runBand> }) {
   );
 }
 
-function BuildCard({ band }: { band: ReturnType<typeof runBand> }) {
+function BuildCard({ band }: { band: Band }) {
   const { capex } = band.base;
   return (
-    <section className="card" aria-labelledby="build-h">
+    <section className="card o-7" aria-labelledby="build-h">
       <div className="card-head">
         <h2 id="build-h"><Term k="totalCash">Cash to put in</Term></h2>
         <span className="card-note num">{lakh(capex.total)} in all</span>

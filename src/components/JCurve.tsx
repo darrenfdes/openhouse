@@ -1,7 +1,7 @@
 // The J-curve: cumulative cash by month, with the cautious-to-hopeful band shaded around it.
 import { Area, CartesianGrid, ComposedChart, Line, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import type { Band } from '../engine';
-import { LAKH, lakh } from '../lib/money';
+import { LAKH, lakh, lakhTick, monthLabel } from '../lib/money';
 
 interface Row {
   month: number;
@@ -54,7 +54,7 @@ export function JCurve({ band, showBand = true, height = 260 }: { band: Band; sh
           <ComposedChart data={rows} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
             <CartesianGrid vertical={false} stroke="var(--grid)" />
             <XAxis dataKey="month" type="number" domain={[0, months]} ticks={yearTicks(months)} tickFormatter={(m: number) => `${m / 12}`} tick={{ fill: 'var(--muted)', fontSize: 12 }} axisLine={false} tickLine={false} label={{ value: 'Years', position: 'insideBottomRight', offset: 0, fill: 'var(--muted)', fontSize: 12 }} height={28} />
-            <YAxis ticks={ticks} domain={[ticks[0], ticks[ticks.length - 1]]} tickFormatter={(v: number) => `${Math.round(v / LAKH)} L`} tick={{ fill: 'var(--muted)', fontSize: 12 }} axisLine={false} tickLine={false} width={52} />
+            <YAxis ticks={ticks} domain={[ticks[0], ticks[ticks.length - 1]]} tickFormatter={lakhTick} tick={{ fill: 'var(--muted)', fontSize: 12 }} axisLine={false} tickLine={false} width={52} />
             {showBand && <Area dataKey="band" stroke="none" fill="var(--accent-band)" isAnimationActive={false} />}
             {showBand && <Line dataKey="cautious" stroke="var(--faint)" strokeWidth={1} strokeDasharray="3 3" dot={false} isAnimationActive={false} />}
             {showBand && <Line dataKey="hopeful" stroke="var(--faint)" strokeWidth={1} strokeDasharray="3 3" dot={false} isAnimationActive={false} />}
@@ -71,7 +71,7 @@ export function JCurve({ band, showBand = true, height = 260 }: { band: Band; sh
                 const m = Number(label);
                 return (
                   <div className="term-pop" style={{ position: 'static', width: 'auto' }}>
-                    <div className="muted">Year {Math.floor(m / 12)}, month {m % 12}</div>
+                    <div className="muted">{monthLabel(m)}</div>
                     <div className="num"><strong>{lakh(r.base)}</strong> expected</div>
                     {r.cautious !== undefined && <div className="num muted">{lakh(r.cautious)} cautious · {lakh(r.hopeful!)} hopeful</div>}
                   </div>

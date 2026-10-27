@@ -2,9 +2,9 @@
 import { useMemo } from 'react';
 import { CartesianGrid, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { Term } from '../components/Term';
-import { breakEven, runPlan, type Result } from '../engine';
+import { breakEven, readYear, runPlan, type Result } from '../engine';
 import type { TermKey } from '../lib/glossary';
-import { LAKH, lakh, pct, years } from '../lib/money';
+import { lakh, lakhTick, monthLabel, pct, years } from '../lib/money';
 import { MAX_COMPARE, useStore } from '../state/store';
 
 // Each plan gets a hue and a dash, so the lines read apart without colour too.
@@ -30,14 +30,20 @@ const ROWS: Row[] = [
   { label: 'Yearly return (IRR)', term: 'irr', value: (r) => r.irr, show: (v) => pct(v), better: 'high' },
   { label: 'Lowest point', term: 'lowestCash', value: (r) => r.lowestCash, show: (v) => lakh(v!), better: 'high' },
   { label: 'Break-even occupancy', term: 'breakEven', value: (_, be) => be, show: (v) => (v === null ? '—' : pct(v, 0)), better: 'low' },
-  { label: 'Profit in year 4', term: 'ebitda', value: (r) => r.years[Math.min(3, r.years.length - 1)].ebitda, show: (v) => lakh(v!), better: 'high' },
+  { label: 'Profit in year 4', term: 'ebitda', value: (r) => readYear(r).ebitda, show: (v) => lakh(v!), better: 'high' },
   { label: 'Lease length', value: (r) => r.years.length, show: (v) => `${v} years`, better: null },
 ];
 
 export function Compare() {
   const { state, dispatch } = useStore();
-  const chosen = state.compareIds.map((id) => state.plans.find((p) => p.id === id)).filter((p) => p !== undefined);
-  const runs = useMemo(() => chosen.map((p) => ({ ...p, result: runPlan(p.plan), be: breakEven(p.plan).lease })), [chosen.map((p) => p.plan).join()]); // eslint-disable-line react-hooks/exhaustive-deps
+  const runs = useMemo(
+    () =>
+      state.compareIds
+        .map((id) => state.plans.find((p) => p.id === id))
+        .filter((p) => p !== undefined)
+        .map((p) => ({ ...p, result: runPlan(p.plan), be: breakEven(p.plan).lease })),
+    [state.plans, state.compareIds],
+  );
 
   const maxMonth = Math.max(0, ...runs.map((r) => r.result.months.length - 1));
   const data = Array.from({ length: maxMonth + 1 }, (_, m) => Object.fromEntries([['month', m], ...runs.map((r) => [r.id, r.result.months[m]?.cumulative])]));
@@ -97,9 +103,9 @@ export function Compare() {
                 <LineChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
                   <CartesianGrid vertical={false} stroke="var(--grid)" />
                   <XAxis dataKey="month" type="number" domain={[0, maxMonth]} ticks={Array.from({ length: Math.floor(maxMonth / 12) + 1 }, (_, i) => i * 12)} tickFormatter={(m: number) => `${m / 12}`} tick={{ fill: 'var(--muted)', fontSize: 12 }} axisLine={false} tickLine={false} height={28} label={{ value: 'Years', position: 'insideBottomRight', offset: 0, fill: 'var(--muted)', fontSize: 12 }} />
-                  <YAxis tickFormatter={(v: number) => `${Math.round(v / LAKH)} L`} tick={{ fill: 'var(--muted)', fontSize: 12 }} axisLine={false} tickLine={false} width={52} />
+                  <YAxis tickFormatter={lakhTick} tick={{ fill: 'var(--muted)', fontSize: 12 }} axisLine={false} tickLine={false} width={52} />
                   <ReferenceLine y={0} stroke="var(--text)" />
-                  <Tooltip formatter={(v: number, id: string) => [lakh(v), runs.find((r) => r.id === id)?.plan.name ?? id]} labelFormatter={(m: number) => `Year ${Math.floor(m / 12)}, month ${m % 12}`} contentStyle={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 6, fontSize: 13 }} />
+                  <Tooltip formatter={(v: number, id: string) => [lakh(v), runs.find((r) => r.id === id)?.plan.name ?? id]} labelFormatter={monthLabel} contentStyle={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 6, fontSize: 13 }} />
                   {runs.map((r, i) => (
                     <Line key={r.id} dataKey={r.id} stroke={STYLES[i].stroke} strokeDasharray={STYLES[i].dash} strokeWidth={2.5} dot={false} isAnimationActive={false} connectNulls={false} />
                   ))}

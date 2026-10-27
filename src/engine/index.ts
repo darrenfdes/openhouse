@@ -1,6 +1,6 @@
 export { runPlan, capex, irr, roomCount } from './run';
 export type { Capex, CapexItem, MonthPoint, Result, RunOptions, Year } from './run';
-export { breakEven, maxRent, TESTS } from './solve';
+export { breakEven, maxRent, readYear, TESTS } from './solve';
 export type { BreakEven, Test } from './solve';
 export { runBand, CAUTIOUS, HOPEFUL } from './band';
 export type { Band } from './band';
