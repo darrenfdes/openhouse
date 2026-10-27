@@ -6,3 +6,4 @@ dist
 *.log
 .scratch/*
 !.scratch/.gitkeep
+.taste-skill/
